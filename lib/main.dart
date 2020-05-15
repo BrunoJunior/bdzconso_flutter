@@ -9,9 +9,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Ma conso',
       theme: ThemeData.dark().copyWith(
-        primaryColor: Colors.deepPurple,
+        backgroundColor: Color(0xFF212121),
+        accentColor: Color(0xFFbbe1fa),
+        primaryColor: Color(0xFF0f4c75),
+        buttonColor: Color(0xFF3282b8),
         floatingActionButtonTheme: FloatingActionButtonThemeData(
-            backgroundColor: Colors.pink, foregroundColor: Colors.white),
+            backgroundColor: Color(0xFFbbe1fa),
+            foregroundColor: Color(0xFF1b262c)),
       ),
       home: MyHomePage(title: 'Mes véhicules'),
     );
