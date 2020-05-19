@@ -1,7 +1,14 @@
+import 'package:conso/database.dart';
+import 'package:conso/screens/add_vehicule.dart';
 import 'package:conso/screens/home.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+MyDatabase database;
+
+void main() {
+  database = MyDatabase();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -17,7 +24,11 @@ class MyApp extends StatelessWidget {
             backgroundColor: Color(0xFFbbe1fa),
             foregroundColor: Color(0xFF1b262c)),
       ),
-      home: MyHomePage(title: 'Mes véhicules'),
+      initialRoute: MyHomePage.id,
+      routes: {
+        MyHomePage.id: (context) => MyHomePage(title: 'Mes véhicules'),
+        AddVehicule.id: (context) => AddVehicule()
+      },
     );
   }
 }

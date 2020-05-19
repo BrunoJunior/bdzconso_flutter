@@ -1,17 +1,11 @@
 import 'package:conso/components/valeur_unite.dart';
+import 'package:conso/database.dart';
 import 'package:flutter/material.dart';
 
 class VehiculeBloc extends StatelessWidget {
-  final String marque, modele;
-  final int annee;
-  final double distance, consommation;
+  final Vehicule vehicule;
 
-  VehiculeBloc(
-      {@required this.marque,
-      @required this.modele,
-      this.annee,
-      this.distance = 0.0,
-      this.consommation = 0.0});
+  VehiculeBloc(this.vehicule);
 
   @override
   Widget build(BuildContext context) {
@@ -35,14 +29,14 @@ class VehiculeBloc extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    '$marque $modele',
+                    '${vehicule.marque} ${vehicule.modele}',
                     style: TextStyle(
                       fontSize: 25.0,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   Text(
-                    annee.toString(),
+                    vehicule.annee?.toString() ?? '',
                     style: TextStyle(
                       fontStyle: FontStyle.italic,
                     ),
@@ -53,11 +47,11 @@ class VehiculeBloc extends StatelessWidget {
                     children: [
                       ValeurUnite(
                         unite: 'km',
-                        valeur: distance,
+                        valeur: (vehicule.distance ?? 0) / 100.0,
                       ),
                       ValeurUnite(
                         unite: 'l/100km',
-                        valeur: consommation,
+                        valeur: (vehicule.consommation ?? 0) / 100.0,
                       ),
                     ],
                   )

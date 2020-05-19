@@ -1,7 +1,12 @@
 import 'package:conso/components/vehicule_bloc.dart';
+import 'package:conso/database.dart';
+import 'package:conso/main.dart';
+import 'package:conso/screens/add_vehicule.dart';
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
+  static final String id = 'home';
+
   MyHomePage({Key key, this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
@@ -34,26 +39,19 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: ListView(
-        children: [
-          VehiculeBloc(
-            marque: 'Honda',
-            modele: 'Insight',
-            annee: 2011,
-            consommation: 5.5,
-            distance: 83972.8,
-          ),
-          VehiculeBloc(
-            marque: 'Peugeot',
-            modele: 'Partner Tipee',
-            annee: 2017,
-            consommation: 5.6,
-            distance: 1058.0,
-          ),
-        ],
+      body: StreamBuilder(
+        stream: database.watchAllVehicules(),
+        builder: (context, AsyncSnapshot<List<Vehicule>> snapshot) => ListView(
+          children: snapshot.data
+                  ?.map((vehicule) => VehiculeBloc(vehicule))
+                  ?.toList() ??
+              [],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pushNamed(context, AddVehicule.id);
+        },
         tooltip: 'Ajouter un véhicule',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
