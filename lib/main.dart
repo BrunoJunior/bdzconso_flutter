@@ -24,9 +24,9 @@ class MyApp extends StatelessWidget {
             backgroundColor: Color(0xFFbbe1fa),
             foregroundColor: Color(0xFF1b262c)),
       ),
-      initialRoute: MyHomePage.id,
+      initialRoute: Home.id,
       routes: {
-        MyHomePage.id: (context) => MyHomePage(title: 'Mes véhicules'),
+        Home.id: (context) => Home('Mes véhicules'),
         AddVehicule.id: (context) => AddVehicule()
       },
     );
