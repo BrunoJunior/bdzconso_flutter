@@ -14,18 +14,25 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
   final int annee;
   final int consommation;
   final int distance;
+  final List<Carburants> carburantsCompatibles;
+  final Carburants carburantFavoris;
+  final bool consoAffichee;
   Vehicule(
       {@required this.id,
       @required this.marque,
       @required this.modele,
       this.annee,
-      this.consommation,
-      this.distance});
+      @required this.consommation,
+      @required this.distance,
+      this.carburantsCompatibles,
+      this.carburantFavoris,
+      @required this.consoAffichee});
   factory Vehicule.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
     final stringType = db.typeSystem.forDartType<String>();
+    final boolType = db.typeSystem.forDartType<bool>();
     return Vehicule(
       id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       marque:
@@ -37,6 +44,14 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
           .mapFromDatabaseResponse(data['${effectivePrefix}consommation']),
       distance:
           intType.mapFromDatabaseResponse(data['${effectivePrefix}distance']),
+      carburantsCompatibles: $VehiculesTable.$converter0.mapToDart(
+          stringType.mapFromDatabaseResponse(
+              data['${effectivePrefix}carburants_compatibles'])),
+      carburantFavoris: $VehiculesTable.$converter1.mapToDart(
+          stringType.mapFromDatabaseResponse(
+              data['${effectivePrefix}carburant_favoris'])),
+      consoAffichee: boolType
+          .mapFromDatabaseResponse(data['${effectivePrefix}conso_affichee']),
     );
   }
   @override
@@ -60,6 +75,19 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
     if (!nullToAbsent || distance != null) {
       map['distance'] = Variable<int>(distance);
     }
+    if (!nullToAbsent || carburantsCompatibles != null) {
+      final converter = $VehiculesTable.$converter0;
+      map['carburants_compatibles'] =
+          Variable<String>(converter.mapToSql(carburantsCompatibles));
+    }
+    if (!nullToAbsent || carburantFavoris != null) {
+      final converter = $VehiculesTable.$converter1;
+      map['carburant_favoris'] =
+          Variable<String>(converter.mapToSql(carburantFavoris));
+    }
+    if (!nullToAbsent || consoAffichee != null) {
+      map['conso_affichee'] = Variable<bool>(consoAffichee);
+    }
     return map;
   }
 
@@ -78,6 +106,15 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
       distance: distance == null && nullToAbsent
           ? const Value.absent()
           : Value(distance),
+      carburantsCompatibles: carburantsCompatibles == null && nullToAbsent
+          ? const Value.absent()
+          : Value(carburantsCompatibles),
+      carburantFavoris: carburantFavoris == null && nullToAbsent
+          ? const Value.absent()
+          : Value(carburantFavoris),
+      consoAffichee: consoAffichee == null && nullToAbsent
+          ? const Value.absent()
+          : Value(consoAffichee),
     );
   }
 
@@ -91,6 +128,11 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
       annee: serializer.fromJson<int>(json['annee']),
       consommation: serializer.fromJson<int>(json['consommation']),
       distance: serializer.fromJson<int>(json['distance']),
+      carburantsCompatibles:
+          serializer.fromJson<List<Carburants>>(json['carburantsCompatibles']),
+      carburantFavoris:
+          serializer.fromJson<Carburants>(json['carburantFavoris']),
+      consoAffichee: serializer.fromJson<bool>(json['consoAffichee']),
     );
   }
   @override
@@ -103,6 +145,10 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
       'annee': serializer.toJson<int>(annee),
       'consommation': serializer.toJson<int>(consommation),
       'distance': serializer.toJson<int>(distance),
+      'carburantsCompatibles':
+          serializer.toJson<List<Carburants>>(carburantsCompatibles),
+      'carburantFavoris': serializer.toJson<Carburants>(carburantFavoris),
+      'consoAffichee': serializer.toJson<bool>(consoAffichee),
     };
   }
 
@@ -112,7 +158,10 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
           String modele,
           int annee,
           int consommation,
-          int distance}) =>
+          int distance,
+          List<Carburants> carburantsCompatibles,
+          Carburants carburantFavoris,
+          bool consoAffichee}) =>
       Vehicule(
         id: id ?? this.id,
         marque: marque ?? this.marque,
@@ -120,6 +169,10 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
         annee: annee ?? this.annee,
         consommation: consommation ?? this.consommation,
         distance: distance ?? this.distance,
+        carburantsCompatibles:
+            carburantsCompatibles ?? this.carburantsCompatibles,
+        carburantFavoris: carburantFavoris ?? this.carburantFavoris,
+        consoAffichee: consoAffichee ?? this.consoAffichee,
       );
   @override
   String toString() {
@@ -129,7 +182,10 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
           ..write('modele: $modele, ')
           ..write('annee: $annee, ')
           ..write('consommation: $consommation, ')
-          ..write('distance: $distance')
+          ..write('distance: $distance, ')
+          ..write('carburantsCompatibles: $carburantsCompatibles, ')
+          ..write('carburantFavoris: $carburantFavoris, ')
+          ..write('consoAffichee: $consoAffichee')
           ..write(')'))
         .toString();
   }
@@ -141,8 +197,16 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
           marque.hashCode,
           $mrjc(
               modele.hashCode,
-              $mrjc(annee.hashCode,
-                  $mrjc(consommation.hashCode, distance.hashCode))))));
+              $mrjc(
+                  annee.hashCode,
+                  $mrjc(
+                      consommation.hashCode,
+                      $mrjc(
+                          distance.hashCode,
+                          $mrjc(
+                              carburantsCompatibles.hashCode,
+                              $mrjc(carburantFavoris.hashCode,
+                                  consoAffichee.hashCode)))))))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
@@ -152,7 +216,10 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
           other.modele == this.modele &&
           other.annee == this.annee &&
           other.consommation == this.consommation &&
-          other.distance == this.distance);
+          other.distance == this.distance &&
+          other.carburantsCompatibles == this.carburantsCompatibles &&
+          other.carburantFavoris == this.carburantFavoris &&
+          other.consoAffichee == this.consoAffichee);
 }
 
 class VehiculesCompanion extends UpdateCompanion<Vehicule> {
@@ -162,6 +229,9 @@ class VehiculesCompanion extends UpdateCompanion<Vehicule> {
   final Value<int> annee;
   final Value<int> consommation;
   final Value<int> distance;
+  final Value<List<Carburants>> carburantsCompatibles;
+  final Value<Carburants> carburantFavoris;
+  final Value<bool> consoAffichee;
   const VehiculesCompanion({
     this.id = const Value.absent(),
     this.marque = const Value.absent(),
@@ -169,6 +239,9 @@ class VehiculesCompanion extends UpdateCompanion<Vehicule> {
     this.annee = const Value.absent(),
     this.consommation = const Value.absent(),
     this.distance = const Value.absent(),
+    this.carburantsCompatibles = const Value.absent(),
+    this.carburantFavoris = const Value.absent(),
+    this.consoAffichee = const Value.absent(),
   });
   VehiculesCompanion.insert({
     this.id = const Value.absent(),
@@ -177,6 +250,9 @@ class VehiculesCompanion extends UpdateCompanion<Vehicule> {
     this.annee = const Value.absent(),
     this.consommation = const Value.absent(),
     this.distance = const Value.absent(),
+    this.carburantsCompatibles = const Value.absent(),
+    this.carburantFavoris = const Value.absent(),
+    this.consoAffichee = const Value.absent(),
   })  : marque = Value(marque),
         modele = Value(modele);
   static Insertable<Vehicule> custom({
@@ -186,6 +262,9 @@ class VehiculesCompanion extends UpdateCompanion<Vehicule> {
     Expression<int> annee,
     Expression<int> consommation,
     Expression<int> distance,
+    Expression<String> carburantsCompatibles,
+    Expression<String> carburantFavoris,
+    Expression<bool> consoAffichee,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -194,6 +273,10 @@ class VehiculesCompanion extends UpdateCompanion<Vehicule> {
       if (annee != null) 'annee': annee,
       if (consommation != null) 'consommation': consommation,
       if (distance != null) 'distance': distance,
+      if (carburantsCompatibles != null)
+        'carburants_compatibles': carburantsCompatibles,
+      if (carburantFavoris != null) 'carburant_favoris': carburantFavoris,
+      if (consoAffichee != null) 'conso_affichee': consoAffichee,
     });
   }
 
@@ -203,7 +286,10 @@ class VehiculesCompanion extends UpdateCompanion<Vehicule> {
       Value<String> modele,
       Value<int> annee,
       Value<int> consommation,
-      Value<int> distance}) {
+      Value<int> distance,
+      Value<List<Carburants>> carburantsCompatibles,
+      Value<Carburants> carburantFavoris,
+      Value<bool> consoAffichee}) {
     return VehiculesCompanion(
       id: id ?? this.id,
       marque: marque ?? this.marque,
@@ -211,6 +297,10 @@ class VehiculesCompanion extends UpdateCompanion<Vehicule> {
       annee: annee ?? this.annee,
       consommation: consommation ?? this.consommation,
       distance: distance ?? this.distance,
+      carburantsCompatibles:
+          carburantsCompatibles ?? this.carburantsCompatibles,
+      carburantFavoris: carburantFavoris ?? this.carburantFavoris,
+      consoAffichee: consoAffichee ?? this.consoAffichee,
     );
   }
 
@@ -234,6 +324,19 @@ class VehiculesCompanion extends UpdateCompanion<Vehicule> {
     }
     if (distance.present) {
       map['distance'] = Variable<int>(distance.value);
+    }
+    if (carburantsCompatibles.present) {
+      final converter = $VehiculesTable.$converter0;
+      map['carburants_compatibles'] =
+          Variable<String>(converter.mapToSql(carburantsCompatibles.value));
+    }
+    if (carburantFavoris.present) {
+      final converter = $VehiculesTable.$converter1;
+      map['carburant_favoris'] =
+          Variable<String>(converter.mapToSql(carburantFavoris.value));
+    }
+    if (consoAffichee.present) {
+      map['conso_affichee'] = Variable<bool>(consoAffichee.value);
     }
     return map;
   }
@@ -296,11 +399,8 @@ class $VehiculesTable extends Vehicules
   GeneratedIntColumn get consommation =>
       _consommation ??= _constructConsommation();
   GeneratedIntColumn _constructConsommation() {
-    return GeneratedIntColumn(
-      'consommation',
-      $tableName,
-      true,
-    );
+    return GeneratedIntColumn('consommation', $tableName, false,
+        defaultValue: const Constant(0));
   }
 
   final VerificationMeta _distanceMeta = const VerificationMeta('distance');
@@ -308,16 +408,61 @@ class $VehiculesTable extends Vehicules
   @override
   GeneratedIntColumn get distance => _distance ??= _constructDistance();
   GeneratedIntColumn _constructDistance() {
-    return GeneratedIntColumn(
-      'distance',
+    return GeneratedIntColumn('distance', $tableName, false,
+        defaultValue: const Constant(0));
+  }
+
+  final VerificationMeta _carburantsCompatiblesMeta =
+      const VerificationMeta('carburantsCompatibles');
+  GeneratedTextColumn _carburantsCompatibles;
+  @override
+  GeneratedTextColumn get carburantsCompatibles =>
+      _carburantsCompatibles ??= _constructCarburantsCompatibles();
+  GeneratedTextColumn _constructCarburantsCompatibles() {
+    return GeneratedTextColumn(
+      'carburants_compatibles',
       $tableName,
       true,
     );
   }
 
+  final VerificationMeta _carburantFavorisMeta =
+      const VerificationMeta('carburantFavoris');
+  GeneratedTextColumn _carburantFavoris;
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, marque, modele, annee, consommation, distance];
+  GeneratedTextColumn get carburantFavoris =>
+      _carburantFavoris ??= _constructCarburantFavoris();
+  GeneratedTextColumn _constructCarburantFavoris() {
+    return GeneratedTextColumn(
+      'carburant_favoris',
+      $tableName,
+      true,
+    );
+  }
+
+  final VerificationMeta _consoAfficheeMeta =
+      const VerificationMeta('consoAffichee');
+  GeneratedBoolColumn _consoAffichee;
+  @override
+  GeneratedBoolColumn get consoAffichee =>
+      _consoAffichee ??= _constructConsoAffichee();
+  GeneratedBoolColumn _constructConsoAffichee() {
+    return GeneratedBoolColumn('conso_affichee', $tableName, false,
+        defaultValue: const Constant(true));
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        marque,
+        modele,
+        annee,
+        consommation,
+        distance,
+        carburantsCompatibles,
+        carburantFavoris,
+        consoAffichee
+      ];
   @override
   $VehiculesTable get asDslTable => this;
   @override
@@ -358,6 +503,15 @@ class $VehiculesTable extends Vehicules
       context.handle(_distanceMeta,
           distance.isAcceptableOrUnknown(data['distance'], _distanceMeta));
     }
+    context.handle(
+        _carburantsCompatiblesMeta, const VerificationResult.success());
+    context.handle(_carburantFavorisMeta, const VerificationResult.success());
+    if (data.containsKey('conso_affichee')) {
+      context.handle(
+          _consoAfficheeMeta,
+          consoAffichee.isAcceptableOrUnknown(
+              data['conso_affichee'], _consoAfficheeMeta));
+    }
     return context;
   }
 
@@ -373,12 +527,20 @@ class $VehiculesTable extends Vehicules
   $VehiculesTable createAlias(String alias) {
     return $VehiculesTable(_db, alias);
   }
+
+  static TypeConverter<List<Carburants>, String> $converter0 =
+      const CarburantsListConverter();
+  static TypeConverter<Carburants, String> $converter1 =
+      const CarburantsConverter();
 }
 
 abstract class _$MyDatabase extends GeneratedDatabase {
   _$MyDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   $VehiculesTable _vehicules;
   $VehiculesTable get vehicules => _vehicules ??= $VehiculesTable(this);
+  VehiculesDao _vehiculesDao;
+  VehiculesDao get vehiculesDao =>
+      _vehiculesDao ??= VehiculesDao(this as MyDatabase);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override

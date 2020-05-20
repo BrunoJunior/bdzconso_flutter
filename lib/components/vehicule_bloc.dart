@@ -1,5 +1,6 @@
 import 'package:conso/components/valeur_unite.dart';
-import 'package:conso/database.dart';
+import 'package:conso/database/database.dart';
+import 'package:conso/enums/carburants.dart';
 import 'package:flutter/material.dart';
 
 class VehiculeBloc extends StatelessWidget {
@@ -7,9 +8,27 @@ class VehiculeBloc extends StatelessWidget {
 
   VehiculeBloc(this.vehicule);
 
+  Widget _getFavoris() {
+    if (vehicule.carburantFavoris == null) {
+      return Container();
+    }
+    CarburantDisplayer displayer =
+        CarburantDisplayer(vehicule.carburantFavoris);
+    return Chip(
+      label: Text(displayer.libelle),
+      padding: EdgeInsets.symmetric(),
+      backgroundColor: displayer.background,
+      labelStyle: TextStyle(
+        color: displayer.color,
+        fontSize: 12.0,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
+      alignment: Alignment.centerLeft,
       children: [
         Padding(
           padding:
@@ -31,7 +50,7 @@ class VehiculeBloc extends StatelessWidget {
                   Text(
                     '${vehicule.marque} ${vehicule.modele}',
                     style: TextStyle(
-                      fontSize: 25.0,
+                      fontSize: 20.0,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -42,16 +61,23 @@ class VehiculeBloc extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 10.0),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      ValeurUnite(
-                        unite: 'km',
-                        valeur: (vehicule.distance ?? 0) / 100.0,
-                      ),
-                      ValeurUnite(
-                        unite: 'l/100km',
-                        valeur: (vehicule.consommation ?? 0) / 100.0,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      _getFavoris(),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          ValeurUnite(
+                            unite: 'km',
+                            valeur: (vehicule.distance ?? 0) / 100.0,
+                          ),
+                          ValeurUnite(
+                            unite: 'l/100km',
+                            valeur: (vehicule.consommation ?? 0) / 100.0,
+                          ),
+                        ],
                       ),
                     ],
                   )
@@ -61,7 +87,7 @@ class VehiculeBloc extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: EdgeInsets.only(top: 20.0, left: 5.0),
+          padding: EdgeInsets.only(left: 5.0),
           child: CircleAvatar(
             backgroundColor: Color(0xFF212121),
             radius: 45.0,

@@ -1,13 +1,14 @@
 import 'package:conso/components/vehicule_bloc.dart';
-import 'package:conso/database.dart';
+import 'package:conso/database/database.dart';
 import 'package:conso/main.dart';
 import 'package:conso/screens/add_vehicule.dart';
 import 'package:flutter/material.dart';
+import 'package:moor_db_viewer/moor_db_viewer.dart';
 
 class Home extends StatelessWidget {
   static final String id = 'home';
   final String title;
-  final Stream<List<Vehicule>> tousVehicules = database.watchAllVehicules();
+  final Stream<List<Vehicule>> tousVehicules = database.vehiculesDao.watchAll();
   Home(this.title);
   @override
   Widget build(BuildContext context) {
@@ -16,6 +17,16 @@ class Home extends StatelessWidget {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(title),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.bug_report),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => MoorDbViewer(database),
+              ),
+            ),
+          )
+        ],
       ),
       body: StreamBuilder(
         stream: tousVehicules,
@@ -27,9 +38,7 @@ class Home extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, AddVehicule.id);
-        },
+        onPressed: () => Navigator.pushNamed(context, AddVehicule.id),
         tooltip: 'Ajouter un véhicule',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
