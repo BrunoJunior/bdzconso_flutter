@@ -1,5 +1,5 @@
 import 'package:conso/database/database.dart';
-import 'package:conso/screens/add_vehicule.dart';
+import 'package:conso/screens/edit_vehicule.dart';
 import 'package:conso/screens/home.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       initialRoute: Home.id,
       routes: {
         Home.id: (context) => Home('Mes véhicules'),
-        AddVehicule.id: (context) => AddVehicule()
+        EditVehicule.id: (context) => EditVehicule()
       },
     );
   }

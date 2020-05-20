@@ -1,6 +1,7 @@
 import 'package:conso/components/valeur_unite.dart';
 import 'package:conso/database/database.dart';
 import 'package:conso/enums/carburants.dart';
+import 'package:conso/screens/edit_vehicule.dart';
 import 'package:flutter/material.dart';
 
 class VehiculeBloc extends StatelessWidget {
@@ -33,9 +34,17 @@ class VehiculeBloc extends StatelessWidget {
         Padding(
           padding:
               EdgeInsets.only(right: 5.0, left: 50.0, top: 5.0, bottom: 5.0),
-          child: Material(
-            color: Color(0xFF212121),
-            borderRadius: BorderRadius.all(Radius.circular(20.0)),
+          child: RawMaterialButton(
+            fillColor: Color(0xFF212121),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0),
+            ),
+            onLongPress: () => Navigator.pushNamed(
+              context,
+              EditVehicule.id,
+              arguments: vehicule.toCompanion(true),
+            ),
+            onPressed: () {},
             elevation: 5.0,
             child: Padding(
               padding: EdgeInsets.only(
@@ -88,10 +97,14 @@ class VehiculeBloc extends StatelessWidget {
         ),
         Padding(
           padding: EdgeInsets.only(left: 5.0),
-          child: CircleAvatar(
-            backgroundColor: Color(0xFF212121),
-            radius: 45.0,
-            child: Icon(Icons.photo_camera),
+          child: RawMaterialButton(
+            shape: CircleBorder(),
+            onPressed: () {},
+            fillColor: Color(0xFF212121),
+            child: Padding(
+              padding: const EdgeInsets.all(25.0),
+              child: Icon(Icons.photo_camera),
+            ),
           ),
         ),
       ],

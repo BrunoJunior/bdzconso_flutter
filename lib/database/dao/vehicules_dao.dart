@@ -21,4 +21,8 @@ class VehiculesDao extends DatabaseAccessor<MyDatabase>
   Future<int> addOne(VehiculesCompanion entry) {
     return into(vehicules).insert(entry);
   }
+
+  Future<int> upsert(VehiculesCompanion entry) {
+    return into(vehicules).insertOnConflictUpdate(entry);
+  }
 }

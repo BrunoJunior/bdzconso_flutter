@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:moor/moor.dart' show Value;
 
-class AddVehicule extends StatefulWidget {
+class EditVehicule extends StatefulWidget {
   static final String id = 'add_vehicule';
   static final int anneeCourante = DateTime.now().year;
 
@@ -15,27 +15,15 @@ class AddVehicule extends StatefulWidget {
   }
 
   @override
-  _AddVehiculeState createState() => _AddVehiculeState();
+  _EditVehiculeState createState() => _EditVehiculeState();
 }
 
-class _AddVehiculeState extends State<AddVehicule> {
-  String marque, modele = '';
-  int annee = AddVehicule.anneeCourante;
-  bool consoAffichee = true;
-  Set<Carburants> carburantsCompatibles = Set<Carburants>();
-  Carburants favoris;
+class _EditVehiculeState extends State<EditVehicule> {
+  VehiculesCompanion vehicule;
 
   _save() async {
     try {
-      VehiculesCompanion data = VehiculesCompanion(
-        marque: Value(marque),
-        modele: Value(modele),
-        annee: Value(annee),
-        consoAffichee: Value(consoAffichee),
-        carburantsCompatibles: Value(carburantsCompatibles.toList()),
-        carburantFavoris: favoris != null ? Value(favoris) : Value.absent(),
-      );
-      int id = await database.vehiculesDao.addOne(data);
+      int id = await database.vehiculesDao.upsert(vehicule);
       print(id);
       Navigator.pop(context);
     } catch (err) {
@@ -45,6 +33,13 @@ class _AddVehiculeState extends State<AddVehicule> {
 
   @override
   Widget build(BuildContext context) {
+    vehicule = vehicule ??
+        ModalRoute.of(context).settings.arguments ??
+        VehiculesCompanion(
+          consoAffichee: Value(true),
+          annee: Value(EditVehicule.anneeCourante),
+          carburantsCompatibles: Value([]),
+        );
     return Scaffold(
       appBar: AppBar(
         title: Text("Création véhicule"),
@@ -64,7 +59,9 @@ class _AddVehiculeState extends State<AddVehicule> {
                 labelText: 'Marque *',
                 icon: Icon(Icons.location_city),
               ),
-              onChanged: (String value) => marque = value,
+              initialValue: vehicule.marque.value ?? '',
+              onChanged: (String value) =>
+                  vehicule = vehicule.copyWith(marque: Value(value)),
               validator: (String value) {
                 return value.isEmpty ? 'Champ requis' : null;
               },
@@ -77,7 +74,9 @@ class _AddVehiculeState extends State<AddVehicule> {
                 labelText: 'Modèle *',
                 icon: Icon(Icons.directions_car),
               ),
-              onChanged: (String value) => modele = value,
+              initialValue: vehicule.modele.value ?? '',
+              onChanged: (String value) =>
+                  vehicule = vehicule.copyWith(modele: Value(value)),
               validator: (String value) {
                 return value.isEmpty ? 'Champ requis' : null;
               },
@@ -106,20 +105,25 @@ class _AddVehiculeState extends State<AddVehicule> {
                       .map(
                         (value) => DropdownMenuItem<int>(
                           value: value,
-                          child: Text(value.toString()),
+                          child: Text(
+                            value.toString(),
+                          ),
                         ),
                       )
                       .toList(),
-                  value: annee,
-                  onChanged: (value) => setState(() => annee = value),
+                  value: vehicule.annee.value,
+                  onChanged: (value) => setState(
+                    () => vehicule = vehicule.copyWith(annee: Value(value)),
+                  ),
                 )
               ],
             ),
           ),
           SwitchListTile(
             title: Text('Consommation affichée'),
-            value: consoAffichee,
-            onChanged: (bool value) => setState(() => consoAffichee = value),
+            value: vehicule.consoAffichee.value,
+            onChanged: (bool value) => setState(() =>
+                vehicule = vehicule.copyWith(consoAffichee: Value(value))),
             secondary: const Icon(Icons.equalizer),
           ),
           Column(
@@ -141,25 +145,31 @@ class _AddVehiculeState extends State<AddVehicule> {
                 alignment: WrapAlignment.center,
                 children: Carburants.values.map((carburant) {
                   CarburantDisplayer displayer = CarburantDisplayer(carburant);
+                  List<Carburants> compatibles =
+                      vehicule.carburantsCompatibles.value;
                   return ActionChip(
                     label: Text(displayer.libelle),
-                    backgroundColor: carburantsCompatibles.contains(carburant)
+                    backgroundColor: compatibles.contains(carburant)
                         ? displayer.background
                         : Colors.black26,
                     elevation: 10.0,
                     labelStyle: TextStyle(
-                        color: carburantsCompatibles.contains(carburant)
+                        color: compatibles.contains(carburant)
                             ? displayer.color
                             : Colors.white),
                     onPressed: () => setState(() {
-                      if (!carburantsCompatibles.remove(carburant)) {
-                        carburantsCompatibles.add(carburant);
-                        if (null == favoris) {
-                          favoris = carburant;
-                        }
-                      } else if (carburant == favoris &&
-                          carburantsCompatibles.length > 0) {
-                        favoris = carburantsCompatibles.first;
+                      if (!compatibles.remove(carburant)) {
+                        vehicule = vehicule.copyWith(
+                            carburantsCompatibles: Value([
+                              ...vehicule.carburantsCompatibles.value,
+                              carburant
+                            ]),
+                            carburantFavoris: Value(
+                                vehicule.carburantFavoris.value ?? carburant));
+                      } else if (carburant == vehicule.carburantFavoris.value &&
+                          compatibles.length > 0) {
+                        vehicule = vehicule.copyWith(
+                            carburantFavoris: Value(compatibles.first));
                       }
                     }),
                   );
@@ -192,9 +202,10 @@ class _AddVehiculeState extends State<AddVehicule> {
                             ),
                           )
                           .toList(),
-                      value: favoris,
-                      onChanged: (carburant) =>
-                          setState(() => favoris = carburant),
+                      value: vehicule.carburantFavoris.value,
+                      onChanged: (carburant) => setState(() => vehicule =
+                          vehicule.copyWith(
+                              carburantFavoris: Value(carburant))),
                     )
                   ],
                 ),
