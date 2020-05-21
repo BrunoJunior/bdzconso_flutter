@@ -54,6 +54,26 @@ class _EditVehiculeState extends State<EditVehicule> {
     );
   }
 
+  List<DropdownMenuItem<Carburants>> get _choixFavoris {
+    return vehicule.carburantsCompatibles.value
+            ?.map(
+              (carburant) => DropdownMenuItem<Carburants>(
+                value: carburant,
+                child: Text(CarburantDisplayer(carburant).libelle),
+              ),
+            )
+            ?.toList(growable: false) ??
+        [];
+  }
+
+  Carburants get _selectedFavoris {
+    final choix = _choixFavoris;
+    if (choix.contains(vehicule.carburantFavoris.value)) {
+      return vehicule.carburantFavoris.value;
+    }
+    return 0 == _choixFavoris.length ? null : choix.first.value;
+  }
+
   @override
   Widget build(BuildContext context) {
     vehicule = vehicule ??
@@ -240,16 +260,8 @@ class _EditVehiculeState extends State<EditVehicule> {
                             ],
                           ),
                           DropdownButton<Carburants>(
-                            items: Carburants.values
-                                .map(
-                                  (carburant) => DropdownMenuItem<Carburants>(
-                                    value: carburant,
-                                    child: Text(
-                                        CarburantDisplayer(carburant).libelle),
-                                  ),
-                                )
-                                .toList(),
-                            value: vehicule.carburantFavoris.value,
+                            items: _choixFavoris,
+                            value: _selectedFavoris,
                             onChanged: (carburant) => setState(() => vehicule =
                                 vehicule.copyWith(
                                     carburantFavoris: Value(carburant))),
