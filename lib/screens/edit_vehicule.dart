@@ -54,24 +54,56 @@ class _EditVehiculeState extends State<EditVehicule> {
     );
   }
 
-  List<DropdownMenuItem<Carburants>> get _choixFavoris {
-    return vehicule.carburantsCompatibles.value
-            ?.map(
-              (carburant) => DropdownMenuItem<Carburants>(
-                value: carburant,
-                child: Text(CarburantDisplayer(carburant).libelle),
+  Widget getChip(Carburants carburant) {
+    final CarburantDisplayer displayer = CarburantDisplayer(carburant);
+    List<Carburants> compatibles = vehicule.carburantsCompatibles.value;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        ActionChip(
+          label: Text(displayer.libelle),
+          backgroundColor: compatibles.contains(carburant)
+              ? displayer.background
+              : Colors.black26,
+          elevation: 4.0,
+          labelStyle: TextStyle(
+              color: compatibles.contains(carburant)
+                  ? displayer.color
+                  : Colors.white),
+          onPressed: () => setState(() {
+            if (!compatibles.remove(carburant)) {
+              vehicule = vehicule.copyWith(
+                  carburantsCompatibles: Value(
+                      [...vehicule.carburantsCompatibles.value, carburant]),
+                  carburantFavoris:
+                      Value(vehicule.carburantFavoris.value ?? carburant));
+            } else if (carburant == vehicule.carburantFavoris.value) {
+              vehicule = vehicule.copyWith(
+                  carburantFavoris: 0 == compatibles.length
+                      ? Value.absent()
+                      : Value(compatibles.first));
+            }
+          }),
+        ),
+        Visibility(
+          visible: vehicule.carburantsCompatibles.value?.contains(carburant) ??
+              false,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: InkWell(
+              onTap: () => setState(() => vehicule =
+                  vehicule.copyWith(carburantFavoris: Value(carburant))),
+              child: Icon(
+                carburant == vehicule.carburantFavoris.value
+                    ? Icons.star
+                    : Icons.star_border,
+                color: Colors.yellow,
               ),
-            )
-            ?.toList(growable: false) ??
-        [];
-  }
-
-  Carburants get _selectedFavoris {
-    final choix = _choixFavoris;
-    if (choix.contains(vehicule.carburantFavoris.value)) {
-      return vehicule.carburantFavoris.value;
-    }
-    return 0 == _choixFavoris.length ? null : choix.first.value;
+            ),
+          ),
+        )
+      ],
+    );
   }
 
   @override
@@ -205,69 +237,9 @@ class _EditVehiculeState extends State<EditVehicule> {
                       ],
                     ),
                     Wrap(
-                      spacing: 20.0,
+                      spacing: 8.0,
                       alignment: WrapAlignment.center,
-                      children: Carburants.values.map((carburant) {
-                        CarburantDisplayer displayer =
-                            CarburantDisplayer(carburant);
-                        List<Carburants> compatibles =
-                            vehicule.carburantsCompatibles.value;
-                        return ActionChip(
-                          label: Text(displayer.libelle),
-                          backgroundColor: compatibles.contains(carburant)
-                              ? displayer.background
-                              : Colors.black26,
-                          elevation: 10.0,
-                          labelStyle: TextStyle(
-                              color: compatibles.contains(carburant)
-                                  ? displayer.color
-                                  : Colors.white),
-                          onPressed: () => setState(() {
-                            if (!compatibles.remove(carburant)) {
-                              vehicule = vehicule.copyWith(
-                                  carburantsCompatibles: Value([
-                                    ...vehicule.carburantsCompatibles.value,
-                                    carburant
-                                  ]),
-                                  carburantFavoris: Value(
-                                      vehicule.carburantFavoris.value ??
-                                          carburant));
-                            } else if (carburant ==
-                                    vehicule.carburantFavoris.value &&
-                                compatibles.length > 0) {
-                              vehicule = vehicule.copyWith(
-                                  carburantFavoris: Value(compatibles.first));
-                            }
-                          }),
-                        );
-                      }).toList(),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(right: 32.0),
-                                child: Icon(Icons.star),
-                              ),
-                              Text(
-                                'Carburant favoris',
-                                style: TextStyle(fontSize: 16.0),
-                              ),
-                            ],
-                          ),
-                          DropdownButton<Carburants>(
-                            items: _choixFavoris,
-                            value: _selectedFavoris,
-                            onChanged: (carburant) => setState(() => vehicule =
-                                vehicule.copyWith(
-                                    carburantFavoris: Value(carburant))),
-                          )
-                        ],
-                      ),
+                      children: Carburants.values.map(getChip).toList(),
                     ),
                   ],
                 ),
