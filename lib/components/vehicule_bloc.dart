@@ -40,8 +40,10 @@ class VehiculeBloc extends StatefulWidget {
 
   Future<String> getImagePath() async {
     final directory = await getApplicationDocumentsDirectory();
-    return join(
-        directory.path, 'vehicule_${vehicule.id}_${DateTime.now()}.png');
+    final moment = DateTime.now();
+    final incPart =
+        '${moment.year}${moment.month}${moment.day}_${moment.hour}${moment.minute}${moment.second}';
+    return join(directory.path, 'vehicule_${vehicule.id}_$incPart.png');
   }
 }
 
