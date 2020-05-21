@@ -1,6 +1,5 @@
 import 'package:conso/components/vehicule_bloc.dart';
 import 'package:conso/database/database.dart';
-import 'package:conso/main.dart';
 import 'package:conso/screens/edit_vehicule.dart';
 import 'package:flutter/material.dart';
 import 'package:moor_db_viewer/moor_db_viewer.dart';
@@ -8,7 +7,8 @@ import 'package:moor_db_viewer/moor_db_viewer.dart';
 class Home extends StatelessWidget {
   static final String id = 'home';
   final String title;
-  final Stream<List<Vehicule>> tousVehicules = database.vehiculesDao.watchAll();
+  final Stream<List<Vehicule>> tousVehicules =
+      MyDatabase.instance.vehiculesDao.watchAll();
   Home(this.title);
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class Home extends StatelessWidget {
             icon: Icon(Icons.bug_report),
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => MoorDbViewer(database),
+                builder: (context) => MoorDbViewer(MyDatabase.instance),
               ),
             ),
           )

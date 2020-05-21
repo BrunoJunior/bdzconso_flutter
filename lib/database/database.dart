@@ -29,6 +29,15 @@ class MyDatabase extends _$MyDatabase {
   // we tell the database where to store the data with this constructor
   MyDatabase() : super(_openConnection());
 
+  // Singleton instance
+  static MyDatabase _singleton;
+  static MyDatabase get instance {
+    if (null == _singleton) {
+      _singleton = MyDatabase();
+    }
+    return _singleton;
+  }
+
   // you should bump this number whenever you change or add a table definition. Migrations
   // are covered later in this readme.
   @override
