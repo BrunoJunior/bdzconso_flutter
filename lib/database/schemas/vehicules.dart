@@ -13,4 +13,5 @@ class Vehicules extends Table {
   TextColumn get carburantFavoris =>
       text().map(const CarburantsConverter()).nullable()();
   BoolColumn get consoAffichee => boolean().withDefault(const Constant(true))();
+  TextColumn get photo => text().nullable()();
 }

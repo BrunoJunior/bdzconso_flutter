@@ -1,12 +1,17 @@
+import 'package:camera/camera.dart';
 import 'package:conso/database/database.dart';
 import 'package:conso/screens/edit_vehicule.dart';
 import 'package:conso/screens/home.dart';
+import 'package:conso/screens/take_picture.dart';
 import 'package:flutter/material.dart';
 
 MyDatabase database;
+List<CameraDescription> cameras;
 
-void main() {
+void main() async {
   database = MyDatabase();
+  WidgetsFlutterBinding.ensureInitialized();
+  cameras = await availableCameras();
   runApp(MyApp());
 }
 
@@ -27,7 +32,9 @@ class MyApp extends StatelessWidget {
       initialRoute: Home.id,
       routes: {
         Home.id: (context) => Home('Mes véhicules'),
-        EditVehicule.id: (context) => EditVehicule()
+        EditVehicule.id: (context) => EditVehicule(),
+        TakePictureScreen.id: (context) =>
+            TakePictureScreen(camera: cameras.first)
       },
     );
   }

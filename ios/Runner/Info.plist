@@ -41,5 +41,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+    <string>Camera is used to take picture or pre-fill data.</string>
 </dict>
 </plist>

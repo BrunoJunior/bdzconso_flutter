@@ -28,6 +28,8 @@ dependencies:
   path_provider: ^1.6.8
   json_annotation: ^3.0.1
   moor_db_viewer: ^2.0.3
+  camera: ^0.5.8+1
+  file_utils: ^0.1.4
 
 dev_dependencies:
   flutter_test:
