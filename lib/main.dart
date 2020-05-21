@@ -4,6 +4,12 @@ import 'package:conso/screens/take_picture.dart';
 import 'package:conso/services/camera_service.dart';
 import 'package:flutter/material.dart';
 
+// TODO - Étape 1 : Créer un écran de saisie d'un plein (simple formulaire)
+// TODO - Étape 2 : Naviguer sur l'écran (accès à définir)
+// TODO - Étape 3 : Calculer la distance et la conso moyenne du véhicule
+// TODO - Étape 4 : Créer un écran affichant les stats du véhicule (accès ? à déterminer)
+// TODO - Étape ultime : utiliser la caméra pour remplir automatiquement les valeurs d'un plein (ML de Google Firebase ?)
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await CameraService.initialize();
