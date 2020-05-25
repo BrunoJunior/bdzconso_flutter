@@ -1,7 +1,9 @@
+import 'package:conso/database/converters/numeric_converter.dart';
 import 'package:conso/database/database.dart';
 import 'package:conso/enums/carburants.dart';
 import 'package:conso/services/plein_service.dart';
 import 'package:conso/ui/composants/form_card.dart';
+import 'package:conso/ui/composants/valeur_unite.dart';
 import 'package:conso/ui/tools/form_fields_tools.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -72,8 +74,10 @@ class _FormPleinState extends State<FormPlein> {
       titleIcon: Icon(Icons.directions_car),
       children: [
         TextFormField(
-          decoration:
-              InputDecoration(labelText: 'Distance *', suffix: Text('km')),
+          decoration: InputDecoration(
+            labelText: 'Distance *',
+            suffix: Text('km'),
+          ),
           keyboardType: TextInputType.number,
           onChanged: (value) => setState(
             () => _plein = widget.pleinService.calculerConsommation(
@@ -88,8 +92,9 @@ class _FormPleinState extends State<FormPlein> {
             decoration: InputDecoration(
                 labelText: 'Consommation affichée', suffix: Text('l/100km')),
             keyboardType: TextInputType.number,
-            onChanged: (value) =>
-                _plein = _plein.copyWith(consoAffichee: Value(value)),
+            onChanged: (value) => setState(
+              () => _plein = _plein.copyWith(consoAffichee: Value(value)),
+            ),
             validator: requiredValidator,
           ),
         ),
@@ -141,6 +146,34 @@ class _FormPleinState extends State<FormPlein> {
           validator: requiredValidator,
         ),
       ],
+    );
+  }
+
+  Widget get _consoCalculee {
+    final consoCalculee =
+        NumericConverter.cents.mapToSql(_plein.consoCalculee.value ?? '0');
+    final consoAffichee =
+        NumericConverter.cents.mapToSql(_plein.consoAffichee.value ?? '0');
+    final diff = consoCalculee - consoAffichee;
+    return Visibility(
+      visible: _plein.consoCalculee.present,
+      child: FormCard(
+        title: Text('Consommation calculée'),
+        titleIcon: Icon(Icons.data_usage),
+        children: [
+          ValeurUnite(
+            unite: 'l/100km',
+            valeur: consoCalculee / 100.0,
+          ),
+          Visibility(
+            visible: 0 != diff,
+            child: Text(
+              '${diff > 0 ? '+' : '-'}${NumericConverter.cents.mapToDart(diff)}',
+              style: TextStyle(fontStyle: FontStyle.italic),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -207,28 +240,10 @@ class _FormPleinState extends State<FormPlein> {
                   validator: requiredValidator,
                 ),
                 _infosVehicule,
+                _consoCalculee,
                 _infosPompe,
               ],
             ),
-          ),
-        ),
-      ),
-      bottomNavigationBar: Visibility(
-        visible: _plein.consoCalculee.present,
-        child: Container(
-          height: 50.0,
-          padding: EdgeInsets.symmetric(horizontal: 10.0),
-          decoration: BoxDecoration(
-              color: Colors.black54,
-              borderRadius: BorderRadiusDirectional.vertical(
-                top: Radius.circular(10.0),
-              )),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Consommation calculée : '),
-              Text('${_plein.consoCalculee.value} L/100km'),
-            ],
           ),
         ),
       ),

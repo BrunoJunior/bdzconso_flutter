@@ -12,7 +12,7 @@ class FormCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 5.0,
-      margin: EdgeInsets.only(top: 15.0),
+      margin: EdgeInsets.symmetric(vertical: 7.5),
       child: Column(
         children: [
           ListTile(

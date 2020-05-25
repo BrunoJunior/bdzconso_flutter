@@ -25,7 +25,7 @@ class NumericConverter extends TypeConverter<String, int> {
   }
 
   double getNumberFromString(String strNum) {
-    return double.parse(strNum.replaceAll(',', '.'));
+    return double.tryParse(strNum.replaceAll(',', '.')) ?? 0.0;
   }
 
   String getStringFromNumber(double num) {
