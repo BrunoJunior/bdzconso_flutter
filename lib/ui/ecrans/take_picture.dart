@@ -5,7 +5,6 @@ import 'package:path_provider/path_provider.dart';
 
 class TakePictureScreen extends StatefulWidget {
   final CameraDescription camera;
-  static final id = 'take-picture';
 
   const TakePictureScreen({
     Key key,

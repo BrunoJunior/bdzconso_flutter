@@ -1,11 +1,10 @@
-import 'package:conso/components/vehicule_bloc.dart';
 import 'package:conso/database/database.dart';
-import 'package:conso/screens/edit_vehicule.dart';
+import 'package:conso/ui/composants/vehicule_bloc.dart';
+import 'package:conso/ui/router.dart';
 import 'package:flutter/material.dart';
 import 'package:moor_db_viewer/moor_db_viewer.dart';
 
 class Home extends StatelessWidget {
-  static final String id = 'home';
   final String title;
   final Stream<List<Vehicule>> tousVehicules =
       MyDatabase.instance.vehiculesDao.watchAll();
@@ -38,7 +37,7 @@ class Home extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, EditVehicule.id),
+        onPressed: () => Navigator.pushNamed(context, EditVehiculeRoute),
         tooltip: 'Ajouter un véhicule',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.

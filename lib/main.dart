@@ -1,17 +1,16 @@
-import 'package:conso/screens/edit_vehicule.dart';
-import 'package:conso/screens/home.dart';
-import 'package:conso/screens/take_picture.dart';
 import 'package:conso/services/camera_service.dart';
+import 'package:conso/ui/router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart';
 
-// TODO - Étape 1 : Créer un écran de saisie d'un plein (simple formulaire)
-// TODO - Étape 2 : Naviguer sur l'écran (accès à définir)
-// TODO - Étape 3 : Calculer la distance et la conso moyenne du véhicule
 // TODO - Étape 4 : Créer un écran affichant les stats du véhicule (accès ? à déterminer)
+// TODO - Étape 5 : Prise en charge des «pleins partiels»
 // TODO - Étape ultime : utiliser la caméra pour remplir automatiquement les valeurs d'un plein (ML de Google Firebase ?)
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Intl.defaultLocale = 'fr_FR';
   await CameraService.initialize();
   runApp(MyApp());
 }
@@ -30,13 +29,17 @@ class MyApp extends StatelessWidget {
             backgroundColor: Color(0xFFbbe1fa),
             foregroundColor: Color(0xFF1b262c)),
       ),
-      initialRoute: Home.id,
-      routes: {
-        Home.id: (context) => Home('Mes véhicules'),
-        EditVehicule.id: (context) => EditVehicule(),
-        TakePictureScreen.id: (context) =>
-            TakePictureScreen(camera: CameraService.instance.cameras.first)
-      },
+      localizationsDelegates: [
+        // ... app-specific localization delegate[s] here
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('fr'),
+      ],
+      initialRoute: HomeRoute,
+      onGenerateRoute: generateRoute,
     );
   }
 }

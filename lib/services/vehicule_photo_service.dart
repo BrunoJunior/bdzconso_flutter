@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:conso/database/database.dart';
-import 'package:conso/screens/take_picture.dart';
+import 'package:conso/ui/router.dart';
 import 'package:file_utils/file_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:moor/moor.dart' show Value;
@@ -36,7 +36,7 @@ class VehiculePhotoService {
 
   Future<VehiculesCompanion> takePicture(
       BuildContext context, VehiculesCompanion vehicule) async {
-    final tempPath = await Navigator.pushNamed(context, TakePictureScreen.id);
+    final tempPath = await Navigator.pushNamed(context, TakePictureRoute);
     final String finalPath = await getImagePath();
     if (null != tempPath && FileUtils.rename(tempPath, finalPath)) {
       return vehicule.copyWith(photo: Value(finalPath));
