@@ -12,8 +12,6 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
   final String marque;
   final String modele;
   final int annee;
-  final int volumeCumule;
-  final int distanceCumulee;
   final List<Carburants> carburantsCompatibles;
   final Carburants carburantFavoris;
   final bool consoAffichee;
@@ -23,8 +21,6 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
       @required this.marque,
       @required this.modele,
       this.annee,
-      @required this.volumeCumule,
-      @required this.distanceCumulee,
       this.carburantsCompatibles,
       this.carburantFavoris,
       @required this.consoAffichee,
@@ -42,10 +38,6 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
       modele:
           stringType.mapFromDatabaseResponse(data['${effectivePrefix}modele']),
       annee: intType.mapFromDatabaseResponse(data['${effectivePrefix}annee']),
-      volumeCumule: intType
-          .mapFromDatabaseResponse(data['${effectivePrefix}volume_cumule']),
-      distanceCumulee: intType
-          .mapFromDatabaseResponse(data['${effectivePrefix}distance_cumulee']),
       carburantsCompatibles: $VehiculesTable.$converter0.mapToDart(
           stringType.mapFromDatabaseResponse(
               data['${effectivePrefix}carburants_compatibles'])),
@@ -72,12 +64,6 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
     }
     if (!nullToAbsent || annee != null) {
       map['annee'] = Variable<int>(annee);
-    }
-    if (!nullToAbsent || volumeCumule != null) {
-      map['volume_cumule'] = Variable<int>(volumeCumule);
-    }
-    if (!nullToAbsent || distanceCumulee != null) {
-      map['distance_cumulee'] = Variable<int>(distanceCumulee);
     }
     if (!nullToAbsent || carburantsCompatibles != null) {
       final converter = $VehiculesTable.$converter0;
@@ -107,12 +93,6 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
           modele == null && nullToAbsent ? const Value.absent() : Value(modele),
       annee:
           annee == null && nullToAbsent ? const Value.absent() : Value(annee),
-      volumeCumule: volumeCumule == null && nullToAbsent
-          ? const Value.absent()
-          : Value(volumeCumule),
-      distanceCumulee: distanceCumulee == null && nullToAbsent
-          ? const Value.absent()
-          : Value(distanceCumulee),
       carburantsCompatibles: carburantsCompatibles == null && nullToAbsent
           ? const Value.absent()
           : Value(carburantsCompatibles),
@@ -135,8 +115,6 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
       marque: serializer.fromJson<String>(json['marque']),
       modele: serializer.fromJson<String>(json['modele']),
       annee: serializer.fromJson<int>(json['annee']),
-      volumeCumule: serializer.fromJson<int>(json['volumeCumule']),
-      distanceCumulee: serializer.fromJson<int>(json['distanceCumulee']),
       carburantsCompatibles:
           serializer.fromJson<List<Carburants>>(json['carburantsCompatibles']),
       carburantFavoris:
@@ -153,8 +131,6 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
       'marque': serializer.toJson<String>(marque),
       'modele': serializer.toJson<String>(modele),
       'annee': serializer.toJson<int>(annee),
-      'volumeCumule': serializer.toJson<int>(volumeCumule),
-      'distanceCumulee': serializer.toJson<int>(distanceCumulee),
       'carburantsCompatibles':
           serializer.toJson<List<Carburants>>(carburantsCompatibles),
       'carburantFavoris': serializer.toJson<Carburants>(carburantFavoris),
@@ -168,8 +144,6 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
           String marque,
           String modele,
           int annee,
-          int volumeCumule,
-          int distanceCumulee,
           List<Carburants> carburantsCompatibles,
           Carburants carburantFavoris,
           bool consoAffichee,
@@ -179,8 +153,6 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
         marque: marque ?? this.marque,
         modele: modele ?? this.modele,
         annee: annee ?? this.annee,
-        volumeCumule: volumeCumule ?? this.volumeCumule,
-        distanceCumulee: distanceCumulee ?? this.distanceCumulee,
         carburantsCompatibles:
             carburantsCompatibles ?? this.carburantsCompatibles,
         carburantFavoris: carburantFavoris ?? this.carburantFavoris,
@@ -194,8 +166,6 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
           ..write('marque: $marque, ')
           ..write('modele: $modele, ')
           ..write('annee: $annee, ')
-          ..write('volumeCumule: $volumeCumule, ')
-          ..write('distanceCumulee: $distanceCumulee, ')
           ..write('carburantsCompatibles: $carburantsCompatibles, ')
           ..write('carburantFavoris: $carburantFavoris, ')
           ..write('consoAffichee: $consoAffichee, ')
@@ -214,15 +184,9 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
               $mrjc(
                   annee.hashCode,
                   $mrjc(
-                      volumeCumule.hashCode,
-                      $mrjc(
-                          distanceCumulee.hashCode,
-                          $mrjc(
-                              carburantsCompatibles.hashCode,
-                              $mrjc(
-                                  carburantFavoris.hashCode,
-                                  $mrjc(consoAffichee.hashCode,
-                                      photo.hashCode))))))))));
+                      carburantsCompatibles.hashCode,
+                      $mrjc(carburantFavoris.hashCode,
+                          $mrjc(consoAffichee.hashCode, photo.hashCode))))))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
@@ -231,8 +195,6 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
           other.marque == this.marque &&
           other.modele == this.modele &&
           other.annee == this.annee &&
-          other.volumeCumule == this.volumeCumule &&
-          other.distanceCumulee == this.distanceCumulee &&
           other.carburantsCompatibles == this.carburantsCompatibles &&
           other.carburantFavoris == this.carburantFavoris &&
           other.consoAffichee == this.consoAffichee &&
@@ -244,8 +206,6 @@ class VehiculesCompanion extends UpdateCompanion<Vehicule> {
   final Value<String> marque;
   final Value<String> modele;
   final Value<int> annee;
-  final Value<int> volumeCumule;
-  final Value<int> distanceCumulee;
   final Value<List<Carburants>> carburantsCompatibles;
   final Value<Carburants> carburantFavoris;
   final Value<bool> consoAffichee;
@@ -255,8 +215,6 @@ class VehiculesCompanion extends UpdateCompanion<Vehicule> {
     this.marque = const Value.absent(),
     this.modele = const Value.absent(),
     this.annee = const Value.absent(),
-    this.volumeCumule = const Value.absent(),
-    this.distanceCumulee = const Value.absent(),
     this.carburantsCompatibles = const Value.absent(),
     this.carburantFavoris = const Value.absent(),
     this.consoAffichee = const Value.absent(),
@@ -267,8 +225,6 @@ class VehiculesCompanion extends UpdateCompanion<Vehicule> {
     @required String marque,
     @required String modele,
     this.annee = const Value.absent(),
-    this.volumeCumule = const Value.absent(),
-    this.distanceCumulee = const Value.absent(),
     this.carburantsCompatibles = const Value.absent(),
     this.carburantFavoris = const Value.absent(),
     this.consoAffichee = const Value.absent(),
@@ -280,8 +236,6 @@ class VehiculesCompanion extends UpdateCompanion<Vehicule> {
     Expression<String> marque,
     Expression<String> modele,
     Expression<int> annee,
-    Expression<int> volumeCumule,
-    Expression<int> distanceCumulee,
     Expression<String> carburantsCompatibles,
     Expression<String> carburantFavoris,
     Expression<bool> consoAffichee,
@@ -292,8 +246,6 @@ class VehiculesCompanion extends UpdateCompanion<Vehicule> {
       if (marque != null) 'marque': marque,
       if (modele != null) 'modele': modele,
       if (annee != null) 'annee': annee,
-      if (volumeCumule != null) 'volume_cumule': volumeCumule,
-      if (distanceCumulee != null) 'distance_cumulee': distanceCumulee,
       if (carburantsCompatibles != null)
         'carburants_compatibles': carburantsCompatibles,
       if (carburantFavoris != null) 'carburant_favoris': carburantFavoris,
@@ -307,8 +259,6 @@ class VehiculesCompanion extends UpdateCompanion<Vehicule> {
       Value<String> marque,
       Value<String> modele,
       Value<int> annee,
-      Value<int> volumeCumule,
-      Value<int> distanceCumulee,
       Value<List<Carburants>> carburantsCompatibles,
       Value<Carburants> carburantFavoris,
       Value<bool> consoAffichee,
@@ -318,8 +268,6 @@ class VehiculesCompanion extends UpdateCompanion<Vehicule> {
       marque: marque ?? this.marque,
       modele: modele ?? this.modele,
       annee: annee ?? this.annee,
-      volumeCumule: volumeCumule ?? this.volumeCumule,
-      distanceCumulee: distanceCumulee ?? this.distanceCumulee,
       carburantsCompatibles:
           carburantsCompatibles ?? this.carburantsCompatibles,
       carburantFavoris: carburantFavoris ?? this.carburantFavoris,
@@ -342,12 +290,6 @@ class VehiculesCompanion extends UpdateCompanion<Vehicule> {
     }
     if (annee.present) {
       map['annee'] = Variable<int>(annee.value);
-    }
-    if (volumeCumule.present) {
-      map['volume_cumule'] = Variable<int>(volumeCumule.value);
-    }
-    if (distanceCumulee.present) {
-      map['distance_cumulee'] = Variable<int>(distanceCumulee.value);
     }
     if (carburantsCompatibles.present) {
       final converter = $VehiculesTable.$converter0;
@@ -419,28 +361,6 @@ class $VehiculesTable extends Vehicules
     );
   }
 
-  final VerificationMeta _volumeCumuleMeta =
-      const VerificationMeta('volumeCumule');
-  GeneratedIntColumn _volumeCumule;
-  @override
-  GeneratedIntColumn get volumeCumule =>
-      _volumeCumule ??= _constructVolumeCumule();
-  GeneratedIntColumn _constructVolumeCumule() {
-    return GeneratedIntColumn('volume_cumule', $tableName, false,
-        defaultValue: const Constant(0));
-  }
-
-  final VerificationMeta _distanceCumuleeMeta =
-      const VerificationMeta('distanceCumulee');
-  GeneratedIntColumn _distanceCumulee;
-  @override
-  GeneratedIntColumn get distanceCumulee =>
-      _distanceCumulee ??= _constructDistanceCumulee();
-  GeneratedIntColumn _constructDistanceCumulee() {
-    return GeneratedIntColumn('distance_cumulee', $tableName, false,
-        defaultValue: const Constant(0));
-  }
-
   final VerificationMeta _carburantsCompatiblesMeta =
       const VerificationMeta('carburantsCompatibles');
   GeneratedTextColumn _carburantsCompatibles;
@@ -498,8 +418,6 @@ class $VehiculesTable extends Vehicules
         marque,
         modele,
         annee,
-        volumeCumule,
-        distanceCumulee,
         carburantsCompatibles,
         carburantFavoris,
         consoAffichee,
@@ -534,18 +452,6 @@ class $VehiculesTable extends Vehicules
     if (data.containsKey('annee')) {
       context.handle(
           _anneeMeta, annee.isAcceptableOrUnknown(data['annee'], _anneeMeta));
-    }
-    if (data.containsKey('volume_cumule')) {
-      context.handle(
-          _volumeCumuleMeta,
-          volumeCumule.isAcceptableOrUnknown(
-              data['volume_cumule'], _volumeCumuleMeta));
-    }
-    if (data.containsKey('distance_cumulee')) {
-      context.handle(
-          _distanceCumuleeMeta,
-          distanceCumulee.isAcceptableOrUnknown(
-              data['distance_cumulee'], _distanceCumuleeMeta));
     }
     context.handle(
         _carburantsCompatiblesMeta, const VerificationResult.success());

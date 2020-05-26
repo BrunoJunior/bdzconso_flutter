@@ -6,8 +6,6 @@ class Vehicules extends Table {
   TextColumn get marque => text()();
   TextColumn get modele => text()();
   IntColumn get annee => integer().nullable()();
-  IntColumn get volumeCumule => integer().withDefault(const Constant(0))();
-  IntColumn get distanceCumulee => integer().withDefault(const Constant(0))();
   TextColumn get carburantsCompatibles =>
       text().map(const CarburantsListConverter()).nullable()();
   TextColumn get carburantFavoris =>

@@ -1,7 +1,8 @@
+import 'package:conso/ui/composants/card_title.dart';
 import 'package:flutter/material.dart';
 
 class FormCard extends StatelessWidget {
-  final Widget title;
+  final String title;
   final Widget titleIcon;
   final List<Widget> children;
 
@@ -13,17 +14,21 @@ class FormCard extends StatelessWidget {
     return Card(
       elevation: 5.0,
       margin: EdgeInsets.symmetric(vertical: 7.5),
-      child: Column(
-        children: [
-          ListTile(
-            leading: titleIcon,
-            title: title,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 15.0),
-            child: Column(children: children),
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CardTitle(
+              title: title,
+              icon: titleIcon,
+              titleStyle: TextStyle(fontSize: 20.0),
+            ),
+            SizedBox(height: 8.0),
+            Center(child: Column(children: children)),
+          ],
+        ),
       ),
     );
   }

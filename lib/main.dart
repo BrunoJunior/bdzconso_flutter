@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 
-// TODO - Étape 4 : Créer un écran affichant les stats du véhicule (accès ? à déterminer)
+// TODO - Étape 4 : Ajouter graphs
 // TODO - Étape 5 : Prise en charge des «pleins partiels»
 // TODO - Étape ultime : utiliser la caméra pour remplir automatiquement les valeurs d'un plein (ML de Google Firebase ?)
 

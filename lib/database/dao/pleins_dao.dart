@@ -1,13 +1,29 @@
-import 'package:conso/database/converters/numeric_converter.dart';
 import 'package:conso/database/database.dart';
 import 'package:conso/database/schemas/pleins.dart';
-import 'package:conso/database/schemas/vehicules.dart';
 import 'package:conso/services/plein_service.dart';
 import 'package:moor/moor.dart';
 
 part 'pleins_dao.g.dart';
 
-@UseDao(tables: [Pleins, Vehicules])
+class Stats {
+  final int volumeCumule;
+  final int montantCumule;
+  final int distanceCumulee;
+  final int count;
+
+  const Stats({
+    @required this.volumeCumule,
+    @required this.montantCumule,
+    @required this.distanceCumulee,
+    @required this.count,
+  });
+
+  double get consoMoyenne {
+    return 100 * (volumeCumule ?? 0) / (distanceCumulee ?? 1);
+  }
+}
+
+@UseDao(tables: [Pleins])
 class PleinsDao extends DatabaseAccessor<MyDatabase> with _$PleinsDaoMixin {
   final PleinService _pleinService = PleinService();
 
@@ -24,23 +40,28 @@ class PleinsDao extends DatabaseAccessor<MyDatabase> with _$PleinsDaoMixin {
         .watch();
   }
 
+  Stream<Stats> watchStats(int idVehicule) {
+    final sumVolume = pleins.volume.sum();
+    final sumDistance = pleins.distance.sum();
+    final sumMontant = pleins.montant.sum();
+    final count = pleins.id.count();
+    final query = selectOnly(pleins)
+      ..addColumns([sumVolume, sumDistance, sumMontant, count])
+      ..where(pleins.idVehicule.equals(idVehicule));
+    return query
+        .map((row) => Stats(
+              volumeCumule: row.read(sumVolume),
+              montantCumule: row.read(sumMontant),
+              distanceCumulee: row.read(sumDistance),
+              count: row.read(count),
+            ))
+        .watchSingle();
+  }
+
   Future<PleinsCompanion> addOne(PleinsCompanion entry) async {
-    return transaction(() async {
-      final id = await into(pleins).insert(
-        _pleinService.calculerConsommation(entry),
-      );
-      final vehicule = await (select(vehicules)
-            ..where((tbl) => tbl.id.equals(entry.idVehicule.value)))
-          .getSingle();
-      await update(vehicules).replace(
-        vehicule.copyWith(
-          distanceCumulee: vehicule.distanceCumulee +
-              NumericConverter.cents.mapToSql(entry.distance.value),
-          volumeCumule: vehicule.volumeCumule +
-              NumericConverter.cents.mapToSql(entry.volume.value),
-        ),
-      );
-      return entry.copyWith(id: Value(id));
-    });
+    final id = await into(pleins).insert(
+      _pleinService.calculerConsommation(entry),
+    );
+    return entry.copyWith(id: Value(id));
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:conso/database/dao/pleins_dao.dart';
 import 'package:conso/database/database.dart';
 import 'package:conso/enums/carburants.dart';
 import 'package:conso/services/vehicule_photo_service.dart';
@@ -9,7 +10,9 @@ import 'package:flutter/material.dart';
 
 class VehiculeBloc extends StatelessWidget {
   final Vehicule vehicule;
-  VehiculeBloc(this.vehicule);
+  final Stream<Stats> stats;
+  VehiculeBloc(this.vehicule)
+      : stats = MyDatabase.instance.pleinsDao.watchStats(vehicule.id);
 
   Widget get _favoris {
     if (null == vehicule.carburantFavoris) {
@@ -83,20 +86,21 @@ class VehiculeBloc extends StatelessWidget {
   }
 
   Widget get _stats {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        ValeurUnite(
-          unite: 'km',
-          valeur: (vehicule.distanceCumulee ?? 0) / 100.0,
-        ),
-        ValeurUnite(
-          unite: 'l/100km',
-          valeur: vehicule.distanceCumulee > 0
-              ? vehicule.volumeCumule / vehicule.distanceCumulee * 100
-              : 0,
-        ),
-      ],
+    return StreamBuilder<Stats>(
+      stream: stats,
+      builder: (context, snapshot) => Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          ValeurUnite(
+            unite: 'km',
+            valeur: (snapshot.data?.distanceCumulee ?? 0) / 100.0,
+          ),
+          ValeurUnite(
+            unite: 'l/100km',
+            valeur: snapshot.data?.consoMoyenne ?? 0,
+          ),
+        ],
+      ),
     );
   }
 

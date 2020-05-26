@@ -8,5 +8,4 @@ part of 'pleins_dao.dart';
 
 mixin _$PleinsDaoMixin on DatabaseAccessor<MyDatabase> {
   $PleinsTable get pleins => attachedDatabase.pleins;
-  $VehiculesTable get vehicules => attachedDatabase.vehicules;
 }

@@ -10,7 +10,8 @@ class ValeurUnite extends StatelessWidget {
   Widget build(BuildContext context) {
     return RichText(
       text: TextSpan(
-          text: valeur.toStringAsFixed(nbDecimales).replaceAll('.', ','),
+          text: valeur?.toStringAsFixed(nbDecimales)?.replaceAll('.', ',') ??
+              '--',
           style: TextStyle(
             fontSize: 18.0,
             fontWeight: FontWeight.w700,

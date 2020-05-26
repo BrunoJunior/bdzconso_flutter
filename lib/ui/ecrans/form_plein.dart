@@ -70,7 +70,7 @@ class _FormPleinState extends State<FormPlein> {
 
   Widget get _infosVehicule {
     return FormCard(
-      title: Text('Infos. véhicule'),
+      title: 'Infos. véhicule',
       titleIcon: Icon(Icons.directions_car),
       children: [
         TextFormField(
@@ -104,7 +104,7 @@ class _FormPleinState extends State<FormPlein> {
 
   Widget get _infosPompe {
     return FormCard(
-      title: Text('Infos. pompe'),
+      title: 'Infos. pompe',
       titleIcon: Icon(Icons.local_gas_station),
       children: [
         Wrap(
@@ -155,25 +155,35 @@ class _FormPleinState extends State<FormPlein> {
     final consoAffichee =
         NumericConverter.cents.mapToSql(_plein.consoAffichee.value ?? '0');
     final diff = consoCalculee - consoAffichee;
-    return Visibility(
-      visible: _plein.consoCalculee.present,
-      child: FormCard(
-        title: Text('Consommation calculée'),
-        titleIcon: Icon(Icons.data_usage),
-        children: [
-          ValeurUnite(
-            unite: 'l/100km',
-            valeur: consoCalculee / 100.0,
+    return FormCard(
+      title: 'Consommation calculée',
+      titleIcon: Icon(Icons.data_usage),
+      children: [
+        ValeurUnite(
+          unite: 'l/100km',
+          valeur: 0 != consoCalculee ? consoCalculee / 100.0 : null,
+        ),
+        Visibility(
+          visible: 0 != diff,
+          child: Text(
+            '${diff > 0 ? '+' : '-'}${NumericConverter.cents.mapToDart(diff)}',
+            style: TextStyle(fontStyle: FontStyle.italic),
           ),
-          Visibility(
-            visible: 0 != diff,
-            child: Text(
-              '${diff > 0 ? '+' : '-'}${NumericConverter.cents.mapToDart(diff)}',
-              style: TextStyle(fontStyle: FontStyle.italic),
-            ),
-          ),
-        ],
+        ),
+      ],
+    );
+  }
+
+  Widget get _zoneDate {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: 'Date *',
+        icon: Icon(Icons.calendar_today),
       ),
+      controller: _dateController,
+      focusNode: AlwaysDisabledFocusNode(),
+      onTap: () => _selectDate(context),
+      validator: requiredValidator,
     );
   }
 
@@ -205,6 +215,38 @@ class _FormPleinState extends State<FormPlein> {
     super.dispose();
   }
 
+  Widget get _portraitLayout {
+    return ListView(
+      children: [
+        _zoneDate,
+        _infosVehicule,
+        _consoCalculee,
+        _infosPompe,
+      ],
+    );
+  }
+
+  Widget get _landscapeLayout {
+    return ListView(
+      children: [
+        _zoneDate,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [_infosVehicule, _consoCalculee]),
+            ),
+            SizedBox(width: 10.0),
+            Expanded(child: _infosPompe),
+          ],
+        )
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -227,23 +269,11 @@ class _FormPleinState extends State<FormPlein> {
           padding: const EdgeInsets.symmetric(horizontal: 15.0),
           child: Form(
             key: _formKey,
-            child: ListView(
-              children: [
-                TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Date *',
-                    icon: Icon(Icons.calendar_today),
-                  ),
-                  controller: _dateController,
-                  focusNode: AlwaysDisabledFocusNode(),
-                  onTap: () => _selectDate(context),
-                  validator: requiredValidator,
-                ),
-                _infosVehicule,
-                _consoCalculee,
-                _infosPompe,
-              ],
-            ),
+            child: OrientationBuilder(
+                builder: (context, orientation) =>
+                    Orientation.landscape == orientation
+                        ? _landscapeLayout
+                        : _portraitLayout),
           ),
         ),
       ),
