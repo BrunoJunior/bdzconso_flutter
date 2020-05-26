@@ -5,20 +5,15 @@ import 'package:conso/ui/router.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class StatsVehicule extends StatefulWidget {
+class StatsVehicule extends StatelessWidget {
   final Vehicule vehicule;
   final Stream<Stats> stats;
 
-  StatsVehicule({Key key, this.vehicule})
+  StatsVehicule(this.vehicule, {Key key})
       : stats = MyDatabase.instance.pleinsDao.watchStats(vehicule.id),
         super(key: key);
 
-  @override
-  _StatsVehiculeState createState() => _StatsVehiculeState();
-}
-
-class _StatsVehiculeState extends State<StatsVehicule> {
-  Widget _getGrid(Stats stats, Orientation orientation) {
+  Widget _getGrid(BuildContext context, Stats stats, Orientation orientation) {
     return GridView.count(
       crossAxisCount: Orientation.portrait == orientation ? 2 : 3,
       children: [
@@ -26,6 +21,11 @@ class _StatsVehiculeState extends State<StatsVehicule> {
           title: 'Nb pleins',
           value: stats?.count ?? 0,
           icon: Icon(Icons.local_gas_station),
+          onTap: () => Navigator.pushNamed(
+            context,
+            ListePleinsRoute,
+            arguments: vehicule,
+          ),
         ),
         StatCard.fromDouble(
           title: 'Moyenne',
@@ -57,14 +57,19 @@ class _StatsVehiculeState extends State<StatsVehicule> {
           icon: FaIcon(FontAwesomeIcons.water),
         ),
         StatCard(
-          title: 'Stats',
+          title: 'Graphs',
+          icon: FaIcon(FontAwesomeIcons.chartLine),
           child: Center(
             child: FaIcon(
               FontAwesomeIcons.chartPie,
               size: 80.0,
             ),
           ),
-          onTap: () {},
+          onTap: () => Navigator.pushNamed(
+            context,
+            GraphsVehiculeRoute,
+            arguments: vehicule,
+          ),
         )
       ],
     );
@@ -74,17 +79,20 @@ class _StatsVehiculeState extends State<StatsVehicule> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            '${widget.vehicule.marque} ${widget.vehicule.modele} (${widget.vehicule.annee})'),
+        title:
+            Text('${vehicule.marque} ${vehicule.modele} (${vehicule.annee})'),
       ),
       body: StreamBuilder<Stats>(
-          stream: widget.stats,
+          stream: stats,
           builder: (context, snapshot) => OrientationBuilder(
               builder: (context, orientation) =>
-                  _getGrid(snapshot.data, orientation))),
+                  _getGrid(context, snapshot.data, orientation))),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, NouveauPleinRoute,
-            arguments: widget.vehicule),
+        onPressed: () => Navigator.pushNamed(
+          context,
+          NouveauPleinRoute,
+          arguments: vehicule,
+        ),
         tooltip: 'Ajouter un plein',
         child: Icon(Icons.local_gas_station),
       ),
