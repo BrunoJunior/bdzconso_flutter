@@ -75,7 +75,7 @@ class StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 5.0,
+      elevation: null == onTap ? 0.0 : 6.0,
       child: InkWell(
         onTap: onTap,
         child: Padding(

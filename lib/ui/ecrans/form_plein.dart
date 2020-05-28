@@ -1,27 +1,26 @@
+import 'package:conso/blocs/bloc_provider.dart';
+import 'package:conso/blocs/vehicules_bloc.dart';
 import 'package:conso/database/converters/numeric_converter.dart';
 import 'package:conso/database/database.dart';
 import 'package:conso/enums/carburants.dart';
 import 'package:conso/services/plein_service.dart';
+import 'package:conso/ui/composants/carburant_chip.dart';
 import 'package:conso/ui/composants/form_card.dart';
 import 'package:conso/ui/composants/valeur_unite.dart';
 import 'package:conso/ui/tools/form_fields_tools.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:moor/moor.dart' show Value;
 
 class FormPlein extends StatefulWidget {
-  final Vehicule vehicule;
   final PleinService pleinService = PleinService();
-
-  FormPlein(this.vehicule, {Key key}) : super(key: key);
 
   @override
   _FormPleinState createState() => _FormPleinState();
 }
 
 class _FormPleinState extends State<FormPlein> {
-  PleinsCompanion _plein;
+  Plein _plein;
   bool _saving = false;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _dateController = TextEditingController();
@@ -31,7 +30,7 @@ class _FormPleinState extends State<FormPlein> {
     setState(() => _saving = true);
     try {
       if (_formKey.currentState.validate()) {
-        await MyDatabase.instance.pleinsDao.addOne(_plein);
+        await MyDatabase.instance.pleinsDao.addOne(_plein.toCompanion(true));
         Navigator.pop(context);
       }
     } catch (err) {
@@ -45,7 +44,7 @@ class _FormPleinState extends State<FormPlein> {
     final DateTime now = DateTime.now();
     DateTime date = await showDatePicker(
       context: context,
-      initialDate: _plein.date.value,
+      initialDate: _plein.date,
       firstDate: DateTime(now.year - 50),
       lastDate: DateTime(now.year + 50),
     );
@@ -54,21 +53,17 @@ class _FormPleinState extends State<FormPlein> {
   }
 
   Widget getChip(Carburants carburant) {
-    final CarburantDisplayer displayer = CarburantDisplayer(carburant);
-    final bool selected = carburant == _plein.carburant.value;
-    return ActionChip(
-      label: Text(displayer.libelle),
-      backgroundColor: selected ? displayer.background : Colors.black26,
-      elevation: 4.0,
-      labelStyle: TextStyle(
-        color: selected ? displayer.color : Colors.white,
+    // FIXME - Le state ne semble pas se mettre à jour …
+    return CarburantChip(
+      carburant,
+      selectionne: carburant == _plein.carburant,
+      onPressed: () => setState(
+        () => _plein = _plein.copyWith(carburant: carburant),
       ),
-      onPressed: () =>
-          setState(() => _plein = _plein.copyWith(carburant: Value(carburant))),
     );
   }
 
-  Widget get _infosVehicule {
+  Widget _getInfosVehicule(Vehicule vehicule) {
     return FormCard(
       title: 'Infos. véhicule',
       titleIcon: Icon(Icons.directions_car),
@@ -81,19 +76,19 @@ class _FormPleinState extends State<FormPlein> {
           keyboardType: TextInputType.number,
           onChanged: (value) => setState(
             () => _plein = widget.pleinService.calculerConsommation(
-              _plein.copyWith(distance: Value(value)),
+              _plein.copyWith(distance: value),
             ),
           ),
           validator: requiredValidator,
         ),
         Visibility(
-          visible: widget.vehicule.consoAffichee,
+          visible: vehicule.consoAffichee,
           child: TextFormField(
             decoration: InputDecoration(
                 labelText: 'Consommation affichée', suffix: Text('l/100km')),
             keyboardType: TextInputType.number,
             onChanged: (value) => setState(
-              () => _plein = _plein.copyWith(consoAffichee: Value(value)),
+              () => _plein = _plein.copyWith(consoAffichee: value),
             ),
             validator: requiredValidator,
           ),
@@ -102,7 +97,7 @@ class _FormPleinState extends State<FormPlein> {
     );
   }
 
-  Widget get _infosPompe {
+  Widget _getInfosPompe(Vehicule vehicule) {
     return FormCard(
       title: 'Infos. pompe',
       titleIcon: Icon(Icons.local_gas_station),
@@ -110,19 +105,19 @@ class _FormPleinState extends State<FormPlein> {
         Wrap(
           spacing: 8.0,
           alignment: WrapAlignment.center,
-          children: widget.vehicule.carburantsCompatibles.map(getChip).toList(),
+          children: vehicule.carburantsCompatibles.map(getChip).toList(),
         ),
         SwitchListTile(
           title: Text('Additivé'),
-          value: _plein.additif.value,
+          value: _plein.additif,
           onChanged: (value) =>
-              setState(() => _plein = _plein.copyWith(additif: Value(value))),
+              setState(() => _plein = _plein.copyWith(additif: value)),
         ),
         TextFormField(
           decoration: InputDecoration(labelText: 'Prix *', suffix: Text('€')),
           keyboardType: TextInputType.number,
           onChanged: (value) => setState(() {
-            _plein = _plein.copyWith(montant: Value(value));
+            _plein = _plein.copyWith(montant: value);
             _calculerPrixLitre();
           }),
           validator: requiredValidator,
@@ -132,7 +127,7 @@ class _FormPleinState extends State<FormPlein> {
           keyboardType: TextInputType.number,
           onChanged: (value) => setState(() {
             _plein = widget.pleinService.calculerConsommation(
-              _plein.copyWith(volume: Value(value)),
+              _plein.copyWith(volume: value),
             );
             _calculerPrixLitre();
           }),
@@ -151,9 +146,9 @@ class _FormPleinState extends State<FormPlein> {
 
   Widget get _consoCalculee {
     final consoCalculee =
-        NumericConverter.cents.mapToSql(_plein.consoCalculee.value ?? '0');
+        NumericConverter.cents.mapToSql(_plein.consoCalculee ?? '0');
     final consoAffichee =
-        NumericConverter.cents.mapToSql(_plein.consoAffichee.value ?? '0');
+        NumericConverter.cents.mapToSql(_plein.consoAffichee ?? '0');
     final diff = consoCalculee - consoAffichee;
     return FormCard(
       title: 'Consommation calculée',
@@ -189,22 +184,29 @@ class _FormPleinState extends State<FormPlein> {
 
   void _calculerPrixLitre() {
     _plein = widget.pleinService.calculerPrixAuLitre(_plein);
-    _prixLitreController.text = _plein.prixLitre.value;
+    _prixLitreController.text = _plein.prixLitre;
   }
 
   @override
   void initState() {
-    _plein = PleinsCompanion(
-      date: Value(DateTime.now()),
-      depuisPartiel: Value(false),
-      partiel: Value(false),
-      carburant: Value(widget.vehicule.carburantFavoris),
-      additif: Value(false),
-      idVehicule: Value(widget.vehicule.id),
+    _plein = Plein(
+      id: null,
+      consoAffichee: null,
+      consoCalculee: null,
+      distance: null,
+      montant: null,
+      prixLitre: null,
+      volume: null,
+      date: DateTime.now(),
+      depuisPartiel: false,
+      partiel: false,
+      carburant: null,
+      additif: false,
+      idVehicule: null,
     );
-    _dateController.text = DateFormat.yMd().format(_plein.date.value);
-    _dateController.addListener(() => _plein = _plein.copyWith(
-        date: Value(DateFormat.yMd().parse(_dateController.text))));
+    _dateController.text = DateFormat.yMd().format(_plein.date);
+    _dateController.addListener(() => _plein =
+        _plein.copyWith(date: DateFormat.yMd().parse(_dateController.text)));
     super.initState();
   }
 
@@ -215,18 +217,18 @@ class _FormPleinState extends State<FormPlein> {
     super.dispose();
   }
 
-  Widget get _portraitLayout {
+  Widget _getPortraitLayout(Vehicule vehicule) {
     return ListView(
       children: [
         _zoneDate,
-        _infosVehicule,
+        _getInfosVehicule(vehicule),
         _consoCalculee,
-        _infosPompe,
+        _getInfosPompe(vehicule),
       ],
     );
   }
 
-  Widget get _landscapeLayout {
+  Widget _getLandscapeLayout(Vehicule vehicule) {
     return ListView(
       children: [
         _zoneDate,
@@ -237,10 +239,10 @@ class _FormPleinState extends State<FormPlein> {
             Expanded(
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [_infosVehicule, _consoCalculee]),
+                  children: [_getInfosVehicule(vehicule), _consoCalculee]),
             ),
             SizedBox(width: 10.0),
-            Expanded(child: _infosPompe),
+            Expanded(child: _getInfosPompe(vehicule)),
           ],
         )
       ],
@@ -249,34 +251,49 @@ class _FormPleinState extends State<FormPlein> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '${widget.vehicule.marque} ${widget.vehicule.modele} (${widget.vehicule.annee})',
-              style: TextStyle(fontSize: 10.0),
+    final VehiculesBloc vehiculesBloc = BlocProvider.of<VehiculesBloc>(context);
+    return StreamBuilder<Vehicule>(
+        stream: vehiculesBloc.vehiculeSelectionne,
+        builder: (context, snapshot) {
+          final vehicule = snapshot.data;
+          if (null == vehicule) {
+            return Container(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+          _plein = _plein.copyWith(
+              idVehicule: vehicule.id, carburant: vehicule.carburantFavoris);
+          return Scaffold(
+            appBar: AppBar(
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${vehicule.marque} ${vehicule.modele} (${vehicule.annee})',
+                    style: TextStyle(fontSize: 10.0),
+                  ),
+                  Text('Nouveau plein'),
+                ],
+              ),
+              actions: [IconButton(icon: Icon(Icons.save), onPressed: _save)],
             ),
-            Text('Nouveau plein'),
-          ],
-        ),
-        actions: [IconButton(icon: Icon(Icons.save), onPressed: _save)],
-      ),
-      body: ModalProgressHUD(
-        inAsyncCall: _saving,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15.0),
-          child: Form(
-            key: _formKey,
-            child: OrientationBuilder(
-                builder: (context, orientation) =>
-                    Orientation.landscape == orientation
-                        ? _landscapeLayout
-                        : _portraitLayout),
-          ),
-        ),
-      ),
-    );
+            body: ModalProgressHUD(
+              inAsyncCall: _saving,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                child: Form(
+                  key: _formKey,
+                  child: OrientationBuilder(
+                      builder: (context, orientation) =>
+                          Orientation.landscape == orientation
+                              ? _getLandscapeLayout(vehicule)
+                              : _getPortraitLayout(vehicule)),
+                ),
+              ),
+            ),
+          );
+        });
   }
 }

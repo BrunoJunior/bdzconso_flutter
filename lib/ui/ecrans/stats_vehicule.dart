@@ -1,31 +1,21 @@
+import 'package:conso/blocs/stats_bloc.dart';
 import 'package:conso/database/dao/pleins_dao.dart';
-import 'package:conso/database/database.dart';
+import 'package:conso/ui/composants/page_vehicule.dart';
 import 'package:conso/ui/composants/stat_card.dart';
 import 'package:conso/ui/router.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class StatsVehicule extends StatelessWidget {
-  final Vehicule vehicule;
-  final Stream<Stats> stats;
-
-  StatsVehicule(this.vehicule, {Key key})
-      : stats = MyDatabase.instance.pleinsDao.watchStats(vehicule.id),
-        super(key: key);
-
-  Widget _getGrid(BuildContext context, Stats stats, Orientation orientation) {
+class StatsVehiculeScreen extends StatelessWidget {
+  Widget _getGrid(BuildContext context, Stats stats, int nbColonnes) {
     return GridView.count(
-      crossAxisCount: Orientation.portrait == orientation ? 2 : 3,
+      crossAxisCount: nbColonnes,
       children: [
         StatCard.fromInt(
           title: 'Nb pleins',
           value: stats?.count ?? 0,
           icon: Icon(Icons.local_gas_station),
-          onTap: () => Navigator.pushNamed(
-            context,
-            ListePleinsRoute,
-            arguments: vehicule,
-          ),
+          onTap: () => Navigator.pushNamed(context, ListePleinsRoute),
         ),
         StatCard.fromDouble(
           title: 'Moyenne',
@@ -65,11 +55,7 @@ class StatsVehicule extends StatelessWidget {
               size: 80.0,
             ),
           ),
-          onTap: () => Navigator.pushNamed(
-            context,
-            GraphsVehiculeRoute,
-            arguments: vehicule,
-          ),
+          onTap: () => Navigator.pushNamed(context, GraphsVehiculeRoute),
         )
       ],
     );
@@ -77,22 +63,22 @@ class StatsVehicule extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title:
-            Text('${vehicule.marque} ${vehicule.modele} (${vehicule.annee})'),
-      ),
-      body: StreamBuilder<Stats>(
-          stream: stats,
+    return PageVehicule(
+      bodyBuilder: (context, vehicule) {
+        final statsBloc = StatsBloc(vehicule: vehicule);
+        return StreamBuilder<Stats>(
+          stream: statsBloc.outStats,
           builder: (context, snapshot) => OrientationBuilder(
-              builder: (context, orientation) =>
-                  _getGrid(context, snapshot.data, orientation))),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(
-          context,
-          NouveauPleinRoute,
-          arguments: vehicule,
-        ),
+            builder: (context, orientation) => _getGrid(
+              context,
+              snapshot.data,
+              Orientation.portrait == orientation ? 2 : 3,
+            ),
+          ),
+        );
+      },
+      fab: FloatingActionButton(
+        onPressed: () => Navigator.pushNamed(context, NouveauPleinRoute),
         tooltip: 'Ajouter un plein',
         child: Icon(Icons.local_gas_station),
       ),

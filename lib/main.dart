@@ -1,10 +1,11 @@
+import 'package:conso/blocs/bloc_provider.dart';
+import 'package:conso/blocs/vehicules_bloc.dart';
 import 'package:conso/services/camera_service.dart';
 import 'package:conso/ui/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 
-// TODO - Étape 4 : Ajouter graphs
 // TODO - Étape 5 : Prise en charge des «pleins partiels»
 // TODO - Étape ultime : utiliser la caméra pour remplir automatiquement les valeurs d'un plein (ML de Google Firebase ?)
 
@@ -12,7 +13,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Intl.defaultLocale = 'fr_FR';
   await CameraService.initialize();
-  runApp(MyApp());
+  runApp(BlocProvider(child: MyApp(), bloc: VehiculesBloc()));
 }
 
 class MyApp extends StatelessWidget {

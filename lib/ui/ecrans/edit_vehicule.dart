@@ -233,8 +233,11 @@ class _EditVehiculeState extends State<EditVehicule> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(flex: 1, child: _zonePhoto),
-        Expanded(flex: 3, child: _zoneForm),
+        SizedBox(
+          child: _zonePhoto,
+          height: 200.0,
+        ),
+        Expanded(child: _zoneForm),
       ],
     );
   }
@@ -243,8 +246,8 @@ class _EditVehiculeState extends State<EditVehicule> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(flex: 1, child: _zonePhoto),
-        Expanded(flex: 2, child: _zoneForm),
+        Expanded(flex: 2, child: _zonePhoto),
+        Expanded(flex: 3, child: _zoneForm),
       ],
     );
   }
@@ -265,12 +268,9 @@ class _EditVehiculeState extends State<EditVehicule> {
       ),
       body: Form(
         key: _formKey,
-        child: OrientationBuilder(
-          builder: (context, orientation) =>
-              Orientation.landscape == orientation
-                  ? _landscapeLayout
-                  : _portraitLayout,
-        ),
+        child: Orientation.landscape == MediaQuery.of(context).orientation
+            ? _landscapeLayout
+            : _portraitLayout,
       ),
     );
   }

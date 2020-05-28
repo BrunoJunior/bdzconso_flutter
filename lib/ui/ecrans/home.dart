@@ -1,16 +1,18 @@
+import 'package:conso/blocs/bloc_provider.dart';
+import 'package:conso/blocs/vehicules_bloc.dart';
 import 'package:conso/database/database.dart';
-import 'package:conso/ui/composants/vehicule_bloc.dart';
+import 'package:conso/ui/composants/bouncing_fab.dart';
+import 'package:conso/ui/composants/vehicules_list.dart';
 import 'package:conso/ui/router.dart';
 import 'package:flutter/material.dart';
 import 'package:moor_db_viewer/moor_db_viewer.dart';
 
 class Home extends StatelessWidget {
   final String title;
-  final Stream<List<Vehicule>> tousVehicules =
-      MyDatabase.instance.vehiculesDao.watchAll();
   Home(this.title);
   @override
   Widget build(BuildContext context) {
+    final VehiculesBloc vehiculesBloc = BlocProvider.of<VehiculesBloc>(context);
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
@@ -28,19 +30,22 @@ class Home extends StatelessWidget {
         ],
       ),
       body: StreamBuilder(
-        stream: tousVehicules,
-        builder: (context, AsyncSnapshot<List<Vehicule>> snapshot) => ListView(
-          children: snapshot.data
-                  ?.map((vehicule) => VehiculeBloc(vehicule))
-                  ?.toList() ??
-              [],
-        ),
+        stream: vehiculesBloc.mesVehicules,
+        builder: VehiculesList.fromStreamBuilder,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, EditVehiculeRoute),
-        tooltip: 'Ajouter un véhicule',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      floatingActionButton: StreamBuilder<List<Vehicule>>(
+          stream: vehiculesBloc.mesVehicules,
+          builder: (context, snapshot) {
+            return BouncingFAB(
+              deactivate: (snapshot.data?.length ?? 0) > 0,
+              child: FloatingActionButton(
+                onPressed: () =>
+                    Navigator.pushNamed(context, EditVehiculeRoute),
+                tooltip: 'Ajouter un véhicule',
+                child: Icon(Icons.add),
+              ),
+            );
+          }), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

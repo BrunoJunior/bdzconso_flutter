@@ -29,17 +29,13 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           builder: (context) =>
               TakePictureScreen(camera: CameraService.instance.cameras.first));
     case StatsVehiculeRoute:
-      var vehicule = settings.arguments;
-      return MaterialPageRoute(builder: (context) => StatsVehicule(vehicule));
+      return MaterialPageRoute(builder: (context) => StatsVehiculeScreen());
     case NouveauPleinRoute:
-      var vehicule = settings.arguments;
-      return MaterialPageRoute(builder: (context) => FormPlein(vehicule));
+      return MaterialPageRoute(builder: (context) => FormPlein());
     case ListePleinsRoute:
-      var vehicule = settings.arguments;
-      return MaterialPageRoute(builder: (context) => ListePleins(vehicule));
+      return MaterialPageRoute(builder: (context) => ListePleins());
     case GraphsVehiculeRoute:
-      var vehicule = settings.arguments;
-      return MaterialPageRoute(builder: (context) => GraphsVehicule(vehicule));
+      return MaterialPageRoute(builder: (context) => GraphsVehicule());
     default:
       return MaterialPageRoute(builder: (context) => Home('Mes véhicules'));
   }

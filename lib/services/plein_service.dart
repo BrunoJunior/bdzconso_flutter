@@ -1,37 +1,33 @@
 import 'package:conso/database/converters/numeric_converter.dart';
 import 'package:conso/database/database.dart';
-import 'package:moor/moor.dart' show Value;
 
 class PleinService {
   const PleinService();
 
-  PleinsCompanion calculerPrixAuLitre(PleinsCompanion plein) {
-    final volume = NumericConverter.cents.mapToSql(plein.volume.value ?? '0');
+  Plein calculerPrixAuLitre(Plein plein) {
+    final volume = NumericConverter.cents.mapToSql(plein.volume ?? '0');
     if (0 == volume) {
-      return plein.copyWith(prixLitre: Value.absent());
+      return plein.copyWith(prixLitre: null);
     }
-    final montant = NumericConverter.cents.mapToSql(plein.montant.value ?? '0');
+    final montant = NumericConverter.cents.mapToSql(plein.montant ?? '0');
     return plein.copyWith(
-      prixLitre:
-          Value(NumericConverter.milli.getStringFromNumber(montant / volume)),
+      prixLitre: NumericConverter.milli.getStringFromNumber(montant / volume),
     );
   }
 
-  PleinsCompanion calculerConsommation(PleinsCompanion plein) {
-    if (!plein.volume.present || !plein.distance.present) {
-      return plein.copyWith(consoCalculee: Value.absent());
+  Plein calculerConsommation(Plein plein) {
+    if (null == plein.volume || null == plein.distance) {
+      return plein.copyWith(consoCalculee: null);
     }
-    final distance =
-        NumericConverter.cents.getNumberFromString(plein.distance.value);
+    final distance = NumericConverter.cents.getNumberFromString(plein.distance);
     if (0.0 == distance) {
-      return plein.copyWith(consoCalculee: Value.absent());
+      return plein.copyWith(consoCalculee: null);
     }
-    final conso =
-        NumericConverter.cents.getNumberFromString(plein.volume.value) *
-            100.0 /
-            distance;
+    final conso = NumericConverter.cents.getNumberFromString(plein.volume) *
+        100.0 /
+        distance;
     return plein.copyWith(
-      consoCalculee: Value(NumericConverter.cents.getStringFromNumber(conso)),
+      consoCalculee: NumericConverter.cents.getStringFromNumber(conso),
     );
   }
 }

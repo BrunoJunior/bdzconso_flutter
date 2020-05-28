@@ -1,6 +1,5 @@
 import 'package:conso/database/database.dart';
 import 'package:conso/database/schemas/pleins.dart';
-import 'package:conso/services/plein_service.dart';
 import 'package:moor/moor.dart';
 
 part 'pleins_dao.g.dart';
@@ -25,8 +24,6 @@ class Stats {
 
 @UseDao(tables: [Pleins])
 class PleinsDao extends DatabaseAccessor<MyDatabase> with _$PleinsDaoMixin {
-  final PleinService _pleinService = PleinService();
-
   // this constructor is required so that the main database can create an instance
   // of this object.
   PleinsDao(MyDatabase db) : super(db);
@@ -37,6 +34,21 @@ class PleinsDao extends DatabaseAccessor<MyDatabase> with _$PleinsDaoMixin {
 
   Stream<List<Plein>> watchAllForVehicule(int idVehicule) {
     return (select(pleins)..where((tbl) => tbl.idVehicule.equals(idVehicule)))
+        .watch();
+  }
+
+  Stream<List<Plein>> watchAnneeGlissante(int idVehicule, {DateTime dateMax}) {
+    final DateTime now = DateTime.now();
+    if (null == dateMax || dateMax.isAfter(now)) {
+      dateMax = now;
+    }
+    final DateTime dateMin =
+        DateTime(dateMax.year - 1, dateMax.month, dateMax.day)
+            .add(Duration(days: 1));
+    return (select(pleins)
+          ..where((tbl) => tbl.idVehicule.equals(idVehicule))
+          ..where((tbl) => tbl.date.isBetweenValues(dateMin, dateMax))
+          ..orderBy([(t) => OrderingTerm(expression: t.date)]))
         .watch();
   }
 
@@ -59,9 +71,11 @@ class PleinsDao extends DatabaseAccessor<MyDatabase> with _$PleinsDaoMixin {
   }
 
   Future<PleinsCompanion> addOne(PleinsCompanion entry) async {
-    final id = await into(pleins).insert(
-      _pleinService.calculerConsommation(entry),
-    );
+    final id = await into(pleins).insert(entry);
     return entry.copyWith(id: Value(id));
+  }
+
+  Future<int> deleteOne(Plein plein) {
+    return (delete(pleins)..whereSamePrimaryKey(plein)).go();
   }
 }
