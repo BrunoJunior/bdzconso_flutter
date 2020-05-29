@@ -13,7 +13,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Intl.defaultLocale = 'fr_FR';
   await CameraService.initialize();
-  runApp(BlocProvider(child: MyApp(), bloc: VehiculesBloc()));
+  runApp(
+    BlocProvider(
+      child: MyApp(),
+      blocBuilder: () => VehiculesBloc(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

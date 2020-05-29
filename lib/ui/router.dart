@@ -33,7 +33,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case NouveauPleinRoute:
       return MaterialPageRoute(builder: (context) => FormPlein());
     case ListePleinsRoute:
-      return MaterialPageRoute(builder: (context) => ListePleins());
+      return MaterialPageRoute(builder: (context) => EcranListePleins());
     case GraphsVehiculeRoute:
       return MaterialPageRoute(builder: (context) => GraphsVehicule());
     default:

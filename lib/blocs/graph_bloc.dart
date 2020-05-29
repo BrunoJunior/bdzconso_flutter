@@ -1,10 +1,10 @@
 import 'package:conso/blocs/bloc.dart';
-import 'package:conso/blocs/pleins_bloc.dart';
 import 'package:conso/database/converters/numeric_converter.dart';
 import 'package:conso/database/database.dart';
+import 'package:conso/models/graph_data.dart';
+import 'package:conso/models/liste_pleins_annuels.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:rxdart/rxdart.dart';
 
 enum GraphDataType {
@@ -41,61 +41,27 @@ class _ListeType {
   _ListeType(this.pleins, this.pleinsPrec, this.dataType, this.comparer);
 }
 
-class GraphData {
-  final List<FlSpot> moyenne;
-  final List<FlSpot> spots;
-  final List<FlSpot> spotsAnneePrec;
-  final List<Color> couleurs;
-  final List<Plein> pleins;
-  GraphData(
-    this.pleins, {
-    @required this.spots,
-    @required this.spotsAnneePrec,
-    @required this.moyenne,
-    @required this.couleurs,
-  });
-
-  String getTitle(double value) {
-    final DateTime start = pleins?.first?.date;
-    if (null == start) {
-      return "";
-    }
-    final DateTime valueDate = start.add(Duration(days: value.toInt()));
-    if (0.0 == value || 1 == valueDate.day) {
-      return DateFormat(DateFormat.ABBR_MONTH).format(valueDate);
-    }
-    return '';
-  }
-
-  double get min => [...spots, ...spotsAnneePrec]
-      .where((spot) => null != spot.y)
-      .reduce((spot1, spot2) => spot1.y < spot2.y ? spot1 : spot2)
-      .y;
-
-  double get max => [...spots, ...spotsAnneePrec]
-      .where((spot) => null != spot.y)
-      .reduce((spot1, spot2) => spot1.y > spot2.y ? spot1 : spot2)
-      .y;
-}
-
 class GraphBloc extends Bloc {
-  final PleinsBloc pleinsBloc;
-  GraphBloc({@required this.pleinsBloc});
-
   BehaviorSubject<GraphDataType> _bsDataType =
       BehaviorSubject.seeded(GraphDataType.CONSO_CALC);
 
   BehaviorSubject<bool> _bsComparaison = BehaviorSubject.seeded(true);
 
-  Stream<_ListeType> get _listePleins => CombineLatestStream.combine4(
-      pleinsBloc.outListeAnneeGlissante,
-      pleinsBloc.outListeAnneePrec,
+  BehaviorSubject<ListePleinsAnnuels> _bsListePleins = BehaviorSubject();
+
+  Stream<_ListeType> get _listeType => CombineLatestStream.combine4(
+      _bsListePleins.where((event) => !event.anneePrec),
+      _bsListePleins.where((event) => event.anneePrec),
       _bsDataType,
       _bsComparaison,
-      (pleins, pleinsPrec, type, comparer) =>
-          _ListeType(pleins, pleinsPrec, type, comparer));
+      (ListePleinsAnnuels annee, ListePleinsAnnuels anneePrec, type,
+              comparer) =>
+          _ListeType(annee.pleins, anneePrec.pleins, type, comparer));
 
   /// Sinks (=entrées)
+  /// Pleins année courante
+  Sink<ListePleinsAnnuels> get inListePleins => _bsListePleins.sink;
+
   /// Changer le type de graph
   Sink<GraphDataType> get inDefinirTypeGraph => _bsDataType.sink;
 
@@ -106,20 +72,11 @@ class GraphBloc extends Bloc {
   /// Le type de données
   Stream<GraphDataType> get outDataType => _bsDataType.stream;
 
-  /// Conparaison activée
+  /// Comparaison activée
   Stream<bool> get outComparaison => _bsComparaison.stream;
 
-  /// Fournis la moyenne
-  Stream<double> get outMoyenne => _listePleins.map(_getMoyenne);
-
-  /// Fournis les couleurs
-  Stream<List<Color>> get outCouleurs => _listePleins.map(_getColors);
-
-  /// Fournis les spots (points du graphique)
-  Stream<List<FlSpot>> get outSpots => _listePleins.map(_getSpots);
-
   /// Fournis les données
-  Stream<GraphData> get outData => _listePleins.map(
+  Stream<GraphData> get outData => _listeType.map(
         (listeType) => GraphData(
           listeType.pleins,
           spotsAnneePrec: listeType.comparer
@@ -262,7 +219,7 @@ class GraphBloc extends Bloc {
 
   @override
   void dispose() {
-    pleinsBloc.dispose();
+    _bsListePleins.close();
     _bsDataType.close();
     _bsComparaison.close();
   }
