@@ -1,5 +1,4 @@
 import 'package:conso/blocs/bloc.dart';
-import 'package:conso/database/converters/numeric_converter.dart';
 import 'package:conso/database/database.dart';
 import 'package:conso/models/graph_data.dart';
 import 'package:conso/models/liste_pleins_annuels.dart';
@@ -88,32 +87,21 @@ class GraphBloc extends Bloc {
         ),
       );
 
-  /// Récupère le bon convertisseur suivant le type
-  NumericConverter _converter(GraphDataType dataType) {
-    switch (dataType) {
-      case GraphDataType.PRIX_LITRE:
-        return NumericConverter.milli;
-      default:
-        return NumericConverter.cents;
-    }
-  }
-
   /// Récupère la bonne donnée suivant le type
   ValeurGenerator _generator(GraphDataType dataType) {
-    final converter = _converter(dataType).getNumberFromString;
     switch (dataType) {
       case GraphDataType.CONSO_CALC:
-        return (plein) => converter(plein.consoCalculee);
+        return (plein) => plein.consoCalculee;
       case GraphDataType.CONSO_AFF:
-        return (plein) => converter(plein.consoAffichee);
+        return (plein) => plein.consoAffichee;
       case GraphDataType.MONTANT:
-        return (plein) => converter(plein.montant);
+        return (plein) => plein.montant;
       case GraphDataType.DISTANCE:
-        return (plein) => converter(plein.distance);
+        return (plein) => plein.distance;
       case GraphDataType.VOLUME:
-        return (plein) => converter(plein.volume);
+        return (plein) => plein.volume;
       case GraphDataType.PRIX_LITRE:
-        return (plein) => converter(plein.prixLitre);
+        return (plein) => plein.prixLitre;
     }
     return (plein) => 0.0;
   }

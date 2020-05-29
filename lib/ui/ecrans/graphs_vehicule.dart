@@ -1,6 +1,6 @@
 import 'package:conso/blocs/bloc_provider.dart';
 import 'package:conso/blocs/pleins_bloc.dart';
-import 'package:conso/ui/composants/graph_view.dart';
+import 'package:conso/ui/composants/graphs/graph_view.dart';
 import 'package:conso/ui/composants/page_vehicule.dart';
 import 'package:flutter/material.dart';
 

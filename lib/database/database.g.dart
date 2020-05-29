@@ -493,13 +493,13 @@ class Plein extends DataClass implements Insertable<Plein> {
   final int idVehicule;
   final DateTime date;
   final Carburants carburant;
-  final String volume;
-  final String montant;
-  final String distance;
-  final String prixLitre;
+  final double volume;
+  final double montant;
+  final double distance;
+  final double prixLitre;
   final bool additif;
-  final String consoAffichee;
-  final String consoCalculee;
+  final double consoAffichee;
+  final double consoCalculee;
   final bool partiel;
   final bool depuisPartiel;
   Plein(
@@ -650,13 +650,13 @@ class Plein extends DataClass implements Insertable<Plein> {
       idVehicule: serializer.fromJson<int>(json['idVehicule']),
       date: serializer.fromJson<DateTime>(json['date']),
       carburant: serializer.fromJson<Carburants>(json['carburant']),
-      volume: serializer.fromJson<String>(json['volume']),
-      montant: serializer.fromJson<String>(json['montant']),
-      distance: serializer.fromJson<String>(json['distance']),
-      prixLitre: serializer.fromJson<String>(json['prixLitre']),
+      volume: serializer.fromJson<double>(json['volume']),
+      montant: serializer.fromJson<double>(json['montant']),
+      distance: serializer.fromJson<double>(json['distance']),
+      prixLitre: serializer.fromJson<double>(json['prixLitre']),
       additif: serializer.fromJson<bool>(json['additif']),
-      consoAffichee: serializer.fromJson<String>(json['consoAffichee']),
-      consoCalculee: serializer.fromJson<String>(json['consoCalculee']),
+      consoAffichee: serializer.fromJson<double>(json['consoAffichee']),
+      consoCalculee: serializer.fromJson<double>(json['consoCalculee']),
       partiel: serializer.fromJson<bool>(json['partiel']),
       depuisPartiel: serializer.fromJson<bool>(json['depuisPartiel']),
     );
@@ -669,13 +669,13 @@ class Plein extends DataClass implements Insertable<Plein> {
       'idVehicule': serializer.toJson<int>(idVehicule),
       'date': serializer.toJson<DateTime>(date),
       'carburant': serializer.toJson<Carburants>(carburant),
-      'volume': serializer.toJson<String>(volume),
-      'montant': serializer.toJson<String>(montant),
-      'distance': serializer.toJson<String>(distance),
-      'prixLitre': serializer.toJson<String>(prixLitre),
+      'volume': serializer.toJson<double>(volume),
+      'montant': serializer.toJson<double>(montant),
+      'distance': serializer.toJson<double>(distance),
+      'prixLitre': serializer.toJson<double>(prixLitre),
       'additif': serializer.toJson<bool>(additif),
-      'consoAffichee': serializer.toJson<String>(consoAffichee),
-      'consoCalculee': serializer.toJson<String>(consoCalculee),
+      'consoAffichee': serializer.toJson<double>(consoAffichee),
+      'consoCalculee': serializer.toJson<double>(consoCalculee),
       'partiel': serializer.toJson<bool>(partiel),
       'depuisPartiel': serializer.toJson<bool>(depuisPartiel),
     };
@@ -686,13 +686,13 @@ class Plein extends DataClass implements Insertable<Plein> {
           int idVehicule,
           DateTime date,
           Carburants carburant,
-          String volume,
-          String montant,
-          String distance,
-          String prixLitre,
+          double volume,
+          double montant,
+          double distance,
+          double prixLitre,
           bool additif,
-          String consoAffichee,
-          String consoCalculee,
+          double consoAffichee,
+          double consoCalculee,
           bool partiel,
           bool depuisPartiel}) =>
       Plein(
@@ -781,13 +781,13 @@ class PleinsCompanion extends UpdateCompanion<Plein> {
   final Value<int> idVehicule;
   final Value<DateTime> date;
   final Value<Carburants> carburant;
-  final Value<String> volume;
-  final Value<String> montant;
-  final Value<String> distance;
-  final Value<String> prixLitre;
+  final Value<double> volume;
+  final Value<double> montant;
+  final Value<double> distance;
+  final Value<double> prixLitre;
   final Value<bool> additif;
-  final Value<String> consoAffichee;
-  final Value<String> consoCalculee;
+  final Value<double> consoAffichee;
+  final Value<double> consoCalculee;
   final Value<bool> partiel;
   final Value<bool> depuisPartiel;
   const PleinsCompanion({
@@ -859,13 +859,13 @@ class PleinsCompanion extends UpdateCompanion<Plein> {
       Value<int> idVehicule,
       Value<DateTime> date,
       Value<Carburants> carburant,
-      Value<String> volume,
-      Value<String> montant,
-      Value<String> distance,
-      Value<String> prixLitre,
+      Value<double> volume,
+      Value<double> montant,
+      Value<double> distance,
+      Value<double> prixLitre,
       Value<bool> additif,
-      Value<String> consoAffichee,
-      Value<String> consoCalculee,
+      Value<double> consoAffichee,
+      Value<double> consoCalculee,
       Value<bool> partiel,
       Value<bool> depuisPartiel}) {
     return PleinsCompanion(
@@ -1156,12 +1156,12 @@ class $PleinsTable extends Pleins with TableInfo<$PleinsTable, Plein> {
 
   static TypeConverter<Carburants, String> $converter0 =
       const CarburantsConverter();
-  static TypeConverter<String, int> $converter1 = NumericConverter.cents;
-  static TypeConverter<String, int> $converter2 = NumericConverter.cents;
-  static TypeConverter<String, int> $converter3 = NumericConverter.cents;
-  static TypeConverter<String, int> $converter4 = NumericConverter.milli;
-  static TypeConverter<String, int> $converter5 = NumericConverter.cents;
-  static TypeConverter<String, int> $converter6 = NumericConverter.cents;
+  static TypeConverter<double, int> $converter1 = NumericConverter.cents;
+  static TypeConverter<double, int> $converter2 = NumericConverter.cents;
+  static TypeConverter<double, int> $converter3 = NumericConverter.cents;
+  static TypeConverter<double, int> $converter4 = NumericConverter.milli;
+  static TypeConverter<double, int> $converter5 = NumericConverter.cents;
+  static TypeConverter<double, int> $converter6 = NumericConverter.cents;
 }
 
 abstract class _$MyDatabase extends GeneratedDatabase {

@@ -5,9 +5,9 @@ import 'package:conso/blocs/vehicules_bloc.dart';
 import 'package:conso/database/database.dart';
 import 'package:conso/services/vehicule_photo_service.dart';
 import 'package:conso/ui/composants/carburant_chip.dart';
-import 'package:conso/ui/composants/vehicule_avatar_widget.dart';
-import 'package:conso/ui/composants/vehicule_stats_widget.dart';
-import 'package:conso/ui/composants/vehicule_title_widget.dart';
+import 'package:conso/ui/composants/vehicules/vehicule_avatar_widget.dart';
+import 'package:conso/ui/composants/vehicules/vehicule_stats_widget.dart';
+import 'package:conso/ui/composants/vehicules/vehicule_title_widget.dart';
 import 'package:conso/ui/router.dart';
 import 'package:flutter/material.dart';
 

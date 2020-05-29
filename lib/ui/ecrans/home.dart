@@ -2,7 +2,7 @@ import 'package:conso/blocs/bloc_provider.dart';
 import 'package:conso/blocs/vehicules_bloc.dart';
 import 'package:conso/database/database.dart';
 import 'package:conso/ui/composants/bouncing_fab.dart';
-import 'package:conso/ui/composants/vehicules_list.dart';
+import 'package:conso/ui/composants/vehicules/vehicules_list.dart';
 import 'package:conso/ui/router.dart';
 import 'package:flutter/material.dart';
 import 'package:moor_db_viewer/moor_db_viewer.dart';

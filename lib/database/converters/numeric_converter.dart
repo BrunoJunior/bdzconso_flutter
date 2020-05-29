@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:moor/moor.dart';
 
-class NumericConverter extends TypeConverter<String, int> {
+class NumericConverter extends TypeConverter<double, int> {
   static const NumericConverter cents = NumericConverter();
   static const NumericConverter milli = NumericConverter(fractionDigits: 3);
 
@@ -14,14 +14,13 @@ class NumericConverter extends TypeConverter<String, int> {
   }
 
   @override
-  String mapToDart(int fromDb) {
-    return getStringFromNumber(fromDb / _divider);
+  double mapToDart(int fromDb) {
+    return fromDb / _divider;
   }
 
   @override
-  int mapToSql(String value) {
-    final number = getNumberFromString(value);
-    return (number * _divider).round();
+  int mapToSql(double value) {
+    return (value * _divider).round();
   }
 
   double getNumberFromString(String strNum) {
