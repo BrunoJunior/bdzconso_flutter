@@ -1,7 +1,6 @@
 import 'package:conso/blocs/bloc.dart';
 import 'package:conso/database/database.dart';
 import 'package:conso/models/graph_data.dart';
-import 'package:conso/models/liste_pleins_annuels.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
@@ -38,6 +37,11 @@ class _ListeType {
   final GraphDataType dataType;
   final bool comparer;
   _ListeType(this.pleins, this.pleinsPrec, this.dataType, this.comparer);
+
+  @override
+  String toString() {
+    return '${pleins?.length} pleins année n, ${pleinsPrec?.length} pleins années n-1, type : ${dataType.toString()}, comparer : ${comparer ? 'OUI' : 'NON'}';
+  }
 }
 
 class GraphBloc extends Bloc {
@@ -46,20 +50,23 @@ class GraphBloc extends Bloc {
 
   BehaviorSubject<bool> _bsComparaison = BehaviorSubject.seeded(true);
 
-  BehaviorSubject<ListePleinsAnnuels> _bsListePleins = BehaviorSubject();
+  BehaviorSubject<List<Plein>> _bsListePleins = BehaviorSubject();
+  BehaviorSubject<List<Plein>> _bsListePleinsPrec = BehaviorSubject();
 
   Stream<_ListeType> get _listeType => CombineLatestStream.combine4(
-      _bsListePleins.where((event) => !event.anneePrec),
-      _bsListePleins.where((event) => event.anneePrec),
+      _bsListePleins,
+      _bsListePleinsPrec,
       _bsDataType,
       _bsComparaison,
-      (ListePleinsAnnuels annee, ListePleinsAnnuels anneePrec, type,
-              comparer) =>
-          _ListeType(annee.pleins, anneePrec.pleins, type, comparer));
+      (List<Plein> pleins, List<Plein> pleinsPrec, type, comparer) =>
+          _ListeType(pleins, pleinsPrec, type, comparer));
 
   /// Sinks (=entrées)
   /// Pleins année courante
-  Sink<ListePleinsAnnuels> get inListePleins => _bsListePleins.sink;
+  Sink<List<Plein>> get inListePleins => _bsListePleins.sink;
+
+  /// Pleins année prec
+  Sink<List<Plein>> get inListePleinsPrec => _bsListePleinsPrec.sink;
 
   /// Changer le type de graph
   Sink<GraphDataType> get inDefinirTypeGraph => _bsDataType.sink;
@@ -75,8 +82,9 @@ class GraphBloc extends Bloc {
   Stream<bool> get outComparaison => _bsComparaison.stream;
 
   /// Fournis les données
-  Stream<GraphData> get outData => _listeType.map(
-        (listeType) => GraphData(
+  Stream<GraphData> get outData => _listeType.map((listeType) {
+        print(listeType);
+        return GraphData(
           listeType.pleins,
           spotsAnneePrec: listeType.comparer
               ? _getSpots(listeType, anneePrec: true)
@@ -84,8 +92,8 @@ class GraphBloc extends Bloc {
           spots: _getSpots(listeType),
           moyenne: _getSpots(listeType, moyenne: true),
           couleurs: _getColors(listeType),
-        ),
-      );
+        );
+      });
 
   /// Récupère la bonne donnée suivant le type
   ValeurGenerator _generator(GraphDataType dataType) {
@@ -189,17 +197,17 @@ class GraphBloc extends Bloc {
       {bool moyenne = false, bool anneePrec = false}) {
     final List<Plein> liste =
         anneePrec ? listeType.pleinsPrec : listeType.pleins;
-    final DateTime start = liste?.first?.date;
-    if (null == start) {
-      return [FlSpot(0, 0)];
+    if (0 == (liste?.length ?? 0)) {
+      return [];
     }
+    final DateTime start = liste.first.date;
+    final valMoyenne =
+        moyenne ? (_getMoyenne(listeType) * 100).round() / 100.0 : null;
     return liste
         .map(
           (plein) => FlSpot(
             plein.date.difference(start).inDays.toDouble(),
-            moyenne
-                ? (_getMoyenne(listeType) * 100).round() / 100.0
-                : _generator(listeType.dataType)(plein),
+            moyenne ? valMoyenne : _generator(listeType.dataType)(plein),
           ),
         )
         .toList(growable: false);
@@ -208,6 +216,7 @@ class GraphBloc extends Bloc {
   @override
   void dispose() {
     _bsListePleins.close();
+    _bsListePleinsPrec.close();
     _bsDataType.close();
     _bsComparaison.close();
   }

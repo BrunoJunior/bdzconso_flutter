@@ -1,8 +1,6 @@
 import 'package:conso/blocs/bloc.dart';
 import 'package:conso/database/database.dart';
-import 'package:conso/models/liste_pleins_annuels.dart';
 import 'package:flutter/foundation.dart';
-import 'package:rxdart/rxdart.dart';
 
 class PleinsBloc extends Bloc {
   final Vehicule vehicule;
@@ -12,7 +10,7 @@ class PleinsBloc extends Bloc {
   Stream<List<Plein>> get outListe =>
       MyDatabase.instance.pleinsDao.watchAllForVehicule(vehicule.id);
 
-  Stream<List<Plein>> get _listeAnneePrec {
+  Stream<List<Plein>> get outListeAnneePrec {
     DateTime now = DateTime.now();
     return MyDatabase.instance.pleinsDao.watchAnneeGlissante(
       vehicule.id,
@@ -20,15 +18,8 @@ class PleinsBloc extends Bloc {
     );
   }
 
-  Stream<List<Plein>> get _listeAnnee =>
+  Stream<List<Plein>> get outListeAnnee =>
       MyDatabase.instance.pleinsDao.watchAnneeGlissante(vehicule.id);
-
-  Stream<ListePleinsAnnuels> get outListePleinsAnnuels => MergeStream([
-        _listeAnnee.map((pleins) => ListePleinsAnnuels(pleins)),
-        _listeAnneePrec.map(
-          (pleins) => ListePleinsAnnuels(pleins, anneePrec: true),
-        ),
-      ]);
 
   @override
   void dispose() {}

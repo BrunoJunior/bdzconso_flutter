@@ -1,5 +1,9 @@
+import 'package:conso/blocs/bloc_provider.dart';
 import 'package:conso/blocs/stats_bloc.dart';
+import 'package:conso/blocs/vehicules_bloc.dart';
 import 'package:conso/database/dao/pleins_dao.dart';
+import 'package:conso/ui/composants/bouncing_fab.dart';
+import 'package:conso/ui/composants/loader.dart';
 import 'package:conso/ui/composants/page_vehicule.dart';
 import 'package:conso/ui/composants/stat_card.dart';
 import 'package:conso/ui/router.dart';
@@ -46,16 +50,19 @@ class StatsVehiculeScreen extends StatelessWidget {
           suffix: 'L',
           icon: FaIcon(FontAwesomeIcons.water),
         ),
-        StatCard(
-          title: 'Graphs',
-          icon: FaIcon(FontAwesomeIcons.chartLine),
-          child: Center(
-            child: FaIcon(
-              FontAwesomeIcons.chartPie,
-              size: 80.0,
+        Visibility(
+          visible: (stats?.count ?? 0) > 0,
+          child: StatCard(
+            title: 'Graphs',
+            icon: FaIcon(FontAwesomeIcons.chartLine),
+            child: Center(
+              child: FaIcon(
+                FontAwesomeIcons.chartPie,
+                size: 80.0,
+              ),
             ),
+            onTap: () => Navigator.pushNamed(context, GraphsVehiculeRoute),
           ),
-          onTap: () => Navigator.pushNamed(context, GraphsVehiculeRoute),
         )
       ],
     );
@@ -63,25 +70,34 @@ class StatsVehiculeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageVehicule(
-      bodyBuilder: (context, vehicule) {
-        final statsBloc = StatsBloc(vehicule: vehicule);
-        return StreamBuilder<Stats>(
-          stream: statsBloc.outStats,
-          builder: (context, snapshot) => OrientationBuilder(
-            builder: (context, orientation) => _getGrid(
-              context,
-              snapshot.data,
-              Orientation.portrait == orientation ? 2 : 3,
+    return StreamBuilder<Stats>(
+        stream: (BlocProvider.of<VehiculesBloc>(context))
+            .vehiculeSelectionne
+            .asyncExpand((v) => StatsBloc(vehicule: v).outStats),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Loader();
+          }
+          return PageVehicule(
+            bodyBuilder: (context, vehicule) {
+              return OrientationBuilder(
+                builder: (context, orientation) => _getGrid(
+                  context,
+                  snapshot.data,
+                  Orientation.portrait == orientation ? 2 : 3,
+                ),
+              );
+            },
+            fab: BouncingFAB(
+              deactivate: snapshot.hasData && snapshot.data.count > 0,
+              child: FloatingActionButton(
+                onPressed: () =>
+                    Navigator.pushNamed(context, NouveauPleinRoute),
+                tooltip: 'Ajouter un plein',
+                child: Icon(Icons.local_gas_station),
+              ),
             ),
-          ),
-        );
-      },
-      fab: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, NouveauPleinRoute),
-        tooltip: 'Ajouter un plein',
-        child: Icon(Icons.local_gas_station),
-      ),
-    );
+          );
+        });
   }
 }

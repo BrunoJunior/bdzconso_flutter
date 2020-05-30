@@ -48,7 +48,8 @@ class VehiculeGraph extends StatelessWidget {
         if (null == data) {
           return Loader();
         }
-        final diffMinMax = data.max - data.min;
+        final min = data.min;
+        final max = data.max;
         return Padding(
           padding: const EdgeInsets.only(right: 10.0),
           child: LineChart(
@@ -77,7 +78,7 @@ class VehiculeGraph extends StatelessWidget {
                   showTitles: true,
                   getTitles: (value) => '${value.toStringAsFixed(1)}',
                   textStyle: TextStyle(color: Colors.white),
-                  interval: (diffMinMax / 5),
+                  interval: min == max ? 1 : ((max - min) / 5),
                 ),
               ),
               borderData: FlBorderData(
@@ -98,8 +99,8 @@ class VehiculeGraph extends StatelessWidget {
                   ),
                 ),
               ),
-              minY: (1.1 * data.min) - (0.1 * data.max),
-              maxY: (1.1 * data.max) - (0.1 * data.min),
+              minY: min == max ? min - 1 : ((1.1 * min) - (0.1 * max)),
+              maxY: min == max ? min + 1 : ((1.1 * max) - (0.1 * min)),
             ),
           ),
         );

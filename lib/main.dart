@@ -6,8 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 
-// FIXME - Les données ne s'affichent pas … Loader en boucle …
-// TODO - ListViewBuilder pour la liste des pleins
+// TODO - ListViewBuilder pour la liste des pleins (avec détail pour un plein)
 // TODO - Reformat formulaire véhicule avec pattern BloC
 // TODO - Étape ultime : utiliser la caméra pour remplir automatiquement les valeurs d'un plein (ML de Google Firebase ?)
 

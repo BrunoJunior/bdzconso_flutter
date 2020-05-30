@@ -80,13 +80,13 @@ class PleinsDao extends DatabaseAccessor<MyDatabase> with _$PleinsDaoMixin {
     final DateTime dateMin =
         DateTime(dateMax.year - 1, dateMax.month, dateMax.day)
             .add(Duration(days: 1));
-    return (select(pleins)
-          ..where((tbl) =>
-              tbl.idVehicule.equals(idVehicule) &
-              tbl.traite.equals(true) &
-              tbl.date.isBetweenValues(dateMin, dateMax))
-          ..orderBy([(t) => OrderingTerm(expression: t.date)]))
-        .watch();
+    final query = (select(pleins)
+      ..where((tbl) =>
+          tbl.idVehicule.equals(idVehicule) &
+          tbl.traite.equals(true) &
+          tbl.date.isBetweenValues(dateMin, dateMax))
+      ..orderBy([(t) => OrderingTerm(expression: t.date)]));
+    return query.watch();
   }
 
   /// Permet de réutiliser le calcul des stats

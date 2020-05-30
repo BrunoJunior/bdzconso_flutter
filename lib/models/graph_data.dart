@@ -29,13 +29,20 @@ class GraphData {
     return '';
   }
 
-  double get min => [...spots, ...spotsAnneePrec]
-      .where((spot) => null != spot.y)
-      .reduce((spot1, spot2) => spot1.y < spot2.y ? spot1 : spot2)
-      .y;
+  Iterable<FlSpot> get _allSpots =>
+      [...spots, ...spotsAnneePrec].where((spot) => null != spot.y);
 
-  double get max => [...spots, ...spotsAnneePrec]
-      .where((spot) => null != spot.y)
-      .reduce((spot1, spot2) => spot1.y > spot2.y ? spot1 : spot2)
-      .y;
+  double get min {
+    final all = _allSpots;
+    return all.isEmpty
+        ? 0.0
+        : all.reduce((spot1, spot2) => spot1.y < spot2.y ? spot1 : spot2).y;
+  }
+
+  double get max {
+    final all = _allSpots;
+    return all.isEmpty
+        ? 1.0
+        : all.reduce((spot1, spot2) => spot1.y > spot2.y ? spot1 : spot2).y;
+  }
 }

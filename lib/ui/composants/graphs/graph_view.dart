@@ -11,12 +11,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 class GraphView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final pleinBloc = BlocProvider.of<PleinsBloc>(context);
     return BlocProvider<GraphBloc>(
       blocBuilder: () {
         final graphBloc = GraphBloc();
-        BlocProvider.of<PleinsBloc>(context)
-            .outListePleinsAnnuels
-            .listen(graphBloc.inListePleins.add);
+        pleinBloc.outListeAnnee.listen(graphBloc.inListePleins.add);
+        pleinBloc.outListeAnneePrec.listen(graphBloc.inListePleinsPrec.add);
         return graphBloc;
       },
       child: ListView(
@@ -32,7 +32,14 @@ class GraphView extends StatelessWidget {
             ),
           ),
           SizedBox(height: 10.0),
-          GraphComparator(),
+          StreamBuilder<bool>(
+              stream: pleinBloc.outListeAnneePrec.map((l) => l.isNotEmpty),
+              builder: (context, snapshot) {
+                return Visibility(
+                  visible: snapshot.hasData && snapshot.data,
+                  child: GraphComparator(),
+                );
+              }),
           VehiculeGraph(),
           GraphSelector(),
         ],
