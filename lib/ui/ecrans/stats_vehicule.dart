@@ -24,7 +24,7 @@ class StatsVehiculeScreen extends StatelessWidget {
           fractionDigits: 2,
           icon: FaIcon(FontAwesomeIcons.tachometerAlt),
         ),
-        StatCard.fromInt(
+        StatCard.fromDouble(
           title: 'Distance',
           value: stats?.distanceCumulee ?? 0,
           fractionDigits: 2,
@@ -32,14 +32,14 @@ class StatsVehiculeScreen extends StatelessWidget {
           icon: FaIcon(FontAwesomeIcons.car),
           mainAxisSize: MainAxisSize.max,
         ),
-        StatCard.fromInt(
+        StatCard.fromDouble(
           title: 'Dépense',
           value: stats?.montantCumule ?? 0,
           fractionDigits: 2,
           suffix: '€',
           icon: FaIcon(FontAwesomeIcons.receipt),
         ),
-        StatCard.fromInt(
+        StatCard.fromDouble(
           title: 'Volume',
           value: stats?.volumeCumule ?? 0,
           fractionDigits: 2,

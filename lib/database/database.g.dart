@@ -501,7 +501,7 @@ class Plein extends DataClass implements Insertable<Plein> {
   final double consoAffichee;
   final double consoCalculee;
   final bool partiel;
-  final bool depuisPartiel;
+  final bool traite;
   Plein(
       {@required this.id,
       @required this.idVehicule,
@@ -515,7 +515,7 @@ class Plein extends DataClass implements Insertable<Plein> {
       @required this.consoAffichee,
       @required this.consoCalculee,
       @required this.partiel,
-      @required this.depuisPartiel});
+      @required this.traite});
   factory Plein.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -547,8 +547,8 @@ class Plein extends DataClass implements Insertable<Plein> {
           .mapFromDatabaseResponse(data['${effectivePrefix}conso_calculee'])),
       partiel:
           boolType.mapFromDatabaseResponse(data['${effectivePrefix}partiel']),
-      depuisPartiel: boolType
-          .mapFromDatabaseResponse(data['${effectivePrefix}depuis_partiel']),
+      traite:
+          boolType.mapFromDatabaseResponse(data['${effectivePrefix}traite']),
     );
   }
   @override
@@ -597,8 +597,8 @@ class Plein extends DataClass implements Insertable<Plein> {
     if (!nullToAbsent || partiel != null) {
       map['partiel'] = Variable<bool>(partiel);
     }
-    if (!nullToAbsent || depuisPartiel != null) {
-      map['depuis_partiel'] = Variable<bool>(depuisPartiel);
+    if (!nullToAbsent || traite != null) {
+      map['traite'] = Variable<bool>(traite);
     }
     return map;
   }
@@ -636,9 +636,8 @@ class Plein extends DataClass implements Insertable<Plein> {
       partiel: partiel == null && nullToAbsent
           ? const Value.absent()
           : Value(partiel),
-      depuisPartiel: depuisPartiel == null && nullToAbsent
-          ? const Value.absent()
-          : Value(depuisPartiel),
+      traite:
+          traite == null && nullToAbsent ? const Value.absent() : Value(traite),
     );
   }
 
@@ -658,7 +657,7 @@ class Plein extends DataClass implements Insertable<Plein> {
       consoAffichee: serializer.fromJson<double>(json['consoAffichee']),
       consoCalculee: serializer.fromJson<double>(json['consoCalculee']),
       partiel: serializer.fromJson<bool>(json['partiel']),
-      depuisPartiel: serializer.fromJson<bool>(json['depuisPartiel']),
+      traite: serializer.fromJson<bool>(json['traite']),
     );
   }
   @override
@@ -677,7 +676,7 @@ class Plein extends DataClass implements Insertable<Plein> {
       'consoAffichee': serializer.toJson<double>(consoAffichee),
       'consoCalculee': serializer.toJson<double>(consoCalculee),
       'partiel': serializer.toJson<bool>(partiel),
-      'depuisPartiel': serializer.toJson<bool>(depuisPartiel),
+      'traite': serializer.toJson<bool>(traite),
     };
   }
 
@@ -694,7 +693,7 @@ class Plein extends DataClass implements Insertable<Plein> {
           double consoAffichee,
           double consoCalculee,
           bool partiel,
-          bool depuisPartiel}) =>
+          bool traite}) =>
       Plein(
         id: id ?? this.id,
         idVehicule: idVehicule ?? this.idVehicule,
@@ -708,7 +707,7 @@ class Plein extends DataClass implements Insertable<Plein> {
         consoAffichee: consoAffichee ?? this.consoAffichee,
         consoCalculee: consoCalculee ?? this.consoCalculee,
         partiel: partiel ?? this.partiel,
-        depuisPartiel: depuisPartiel ?? this.depuisPartiel,
+        traite: traite ?? this.traite,
       );
   @override
   String toString() {
@@ -725,7 +724,7 @@ class Plein extends DataClass implements Insertable<Plein> {
           ..write('consoAffichee: $consoAffichee, ')
           ..write('consoCalculee: $consoCalculee, ')
           ..write('partiel: $partiel, ')
-          ..write('depuisPartiel: $depuisPartiel')
+          ..write('traite: $traite')
           ..write(')'))
         .toString();
   }
@@ -753,10 +752,8 @@ class Plein extends DataClass implements Insertable<Plein> {
                                           consoAffichee.hashCode,
                                           $mrjc(
                                               consoCalculee.hashCode,
-                                              $mrjc(
-                                                  partiel.hashCode,
-                                                  depuisPartiel
-                                                      .hashCode)))))))))))));
+                                              $mrjc(partiel.hashCode,
+                                                  traite.hashCode)))))))))))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
@@ -773,7 +770,7 @@ class Plein extends DataClass implements Insertable<Plein> {
           other.consoAffichee == this.consoAffichee &&
           other.consoCalculee == this.consoCalculee &&
           other.partiel == this.partiel &&
-          other.depuisPartiel == this.depuisPartiel);
+          other.traite == this.traite);
 }
 
 class PleinsCompanion extends UpdateCompanion<Plein> {
@@ -789,7 +786,7 @@ class PleinsCompanion extends UpdateCompanion<Plein> {
   final Value<double> consoAffichee;
   final Value<double> consoCalculee;
   final Value<bool> partiel;
-  final Value<bool> depuisPartiel;
+  final Value<bool> traite;
   const PleinsCompanion({
     this.id = const Value.absent(),
     this.idVehicule = const Value.absent(),
@@ -803,7 +800,7 @@ class PleinsCompanion extends UpdateCompanion<Plein> {
     this.consoAffichee = const Value.absent(),
     this.consoCalculee = const Value.absent(),
     this.partiel = const Value.absent(),
-    this.depuisPartiel = const Value.absent(),
+    this.traite = const Value.absent(),
   });
   PleinsCompanion.insert({
     this.id = const Value.absent(),
@@ -818,7 +815,7 @@ class PleinsCompanion extends UpdateCompanion<Plein> {
     this.consoAffichee = const Value.absent(),
     this.consoCalculee = const Value.absent(),
     this.partiel = const Value.absent(),
-    this.depuisPartiel = const Value.absent(),
+    this.traite = const Value.absent(),
   })  : idVehicule = Value(idVehicule),
         date = Value(date),
         carburant = Value(carburant);
@@ -835,7 +832,7 @@ class PleinsCompanion extends UpdateCompanion<Plein> {
     Expression<int> consoAffichee,
     Expression<int> consoCalculee,
     Expression<bool> partiel,
-    Expression<bool> depuisPartiel,
+    Expression<bool> traite,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -850,7 +847,7 @@ class PleinsCompanion extends UpdateCompanion<Plein> {
       if (consoAffichee != null) 'conso_affichee': consoAffichee,
       if (consoCalculee != null) 'conso_calculee': consoCalculee,
       if (partiel != null) 'partiel': partiel,
-      if (depuisPartiel != null) 'depuis_partiel': depuisPartiel,
+      if (traite != null) 'traite': traite,
     });
   }
 
@@ -867,7 +864,7 @@ class PleinsCompanion extends UpdateCompanion<Plein> {
       Value<double> consoAffichee,
       Value<double> consoCalculee,
       Value<bool> partiel,
-      Value<bool> depuisPartiel}) {
+      Value<bool> traite}) {
     return PleinsCompanion(
       id: id ?? this.id,
       idVehicule: idVehicule ?? this.idVehicule,
@@ -881,7 +878,7 @@ class PleinsCompanion extends UpdateCompanion<Plein> {
       consoAffichee: consoAffichee ?? this.consoAffichee,
       consoCalculee: consoCalculee ?? this.consoCalculee,
       partiel: partiel ?? this.partiel,
-      depuisPartiel: depuisPartiel ?? this.depuisPartiel,
+      traite: traite ?? this.traite,
     );
   }
 
@@ -933,8 +930,8 @@ class PleinsCompanion extends UpdateCompanion<Plein> {
     if (partiel.present) {
       map['partiel'] = Variable<bool>(partiel.value);
     }
-    if (depuisPartiel.present) {
-      map['depuis_partiel'] = Variable<bool>(depuisPartiel.value);
+    if (traite.present) {
+      map['traite'] = Variable<bool>(traite.value);
     }
     return map;
   }
@@ -1062,15 +1059,13 @@ class $PleinsTable extends Pleins with TableInfo<$PleinsTable, Plein> {
         defaultValue: const Constant(false));
   }
 
-  final VerificationMeta _depuisPartielMeta =
-      const VerificationMeta('depuisPartiel');
-  GeneratedBoolColumn _depuisPartiel;
+  final VerificationMeta _traiteMeta = const VerificationMeta('traite');
+  GeneratedBoolColumn _traite;
   @override
-  GeneratedBoolColumn get depuisPartiel =>
-      _depuisPartiel ??= _constructDepuisPartiel();
-  GeneratedBoolColumn _constructDepuisPartiel() {
-    return GeneratedBoolColumn('depuis_partiel', $tableName, false,
-        defaultValue: const Constant(false));
+  GeneratedBoolColumn get traite => _traite ??= _constructTraite();
+  GeneratedBoolColumn _constructTraite() {
+    return GeneratedBoolColumn('traite', $tableName, false,
+        defaultValue: const Constant(true));
   }
 
   @override
@@ -1087,7 +1082,7 @@ class $PleinsTable extends Pleins with TableInfo<$PleinsTable, Plein> {
         consoAffichee,
         consoCalculee,
         partiel,
-        depuisPartiel
+        traite
       ];
   @override
   $PleinsTable get asDslTable => this;
@@ -1132,11 +1127,9 @@ class $PleinsTable extends Pleins with TableInfo<$PleinsTable, Plein> {
       context.handle(_partielMeta,
           partiel.isAcceptableOrUnknown(data['partiel'], _partielMeta));
     }
-    if (data.containsKey('depuis_partiel')) {
-      context.handle(
-          _depuisPartielMeta,
-          depuisPartiel.isAcceptableOrUnknown(
-              data['depuis_partiel'], _depuisPartielMeta));
+    if (data.containsKey('traite')) {
+      context.handle(_traiteMeta,
+          traite.isAcceptableOrUnknown(data['traite'], _traiteMeta));
     }
     return context;
   }

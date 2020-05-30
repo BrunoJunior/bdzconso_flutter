@@ -39,7 +39,7 @@ class AddPleinFormBloc
             consoAffichee: null,
             consoCalculee: null,
             partiel: null,
-            depuisPartiel: null,
+            traite: null,
           ),
         ) {
     _dateController.add(DateFormat.yMd().format(DateTime.now()));
@@ -87,6 +87,10 @@ class AddPleinFormBloc
     consoCalculee.listen(
       (val) => _pleinController
           .add(_pleinController.value.copyWith(consoCalculee: val)),
+    );
+    partiel.listen(
+      (val) => _pleinController
+          .add(_pleinController.value.copyWith(partiel: val, traite: !val)),
     );
   }
 
@@ -145,24 +149,24 @@ class AddPleinFormBloc
   Stream<Carburants> get carburant => _carburantController.stream;
   Stream<bool> get additive => _additiveController.stream;
   Stream<bool> get partiel => _partielController.stream;
-  Stream<double> get consoCalculee => CombineLatestStream.combine2(
-      volume.where(isPositive),
-      distance.where(isPositive),
-      (double vol, double dist) => vol * 100.0 / dist);
+  Stream<double> get consoCalculee => MergeStream([volume, distance, partiel])
+      .asyncMap((v) => MyDatabase.instance.pleinsDao
+          .remplirConsoCalculee(_pleinController.value))
+      .map((plein) => plein.consoCalculee);
   Stream<bool> get isValid => CombineLatestStream(
       [date, distance, prix, volume, prixLitre, consoAffichee],
       (values) => true);
 
-  Stream<PleinsCompanion> get _pleinToSave => CombineLatestStream.combine3(
+  Stream<Plein> get _pleinToSave => CombineLatestStream.combine3(
         _submitController.where((sub) => sub ?? false),
         isValid,
         _pleinController.stream,
-        (submit, valid, plein) => plein.toCompanion(true),
+        (submit, valid, plein) => plein,
       );
 
   Stream<bool> get isSaved => _pleinToSave
       .asyncMap(
-        (PleinsCompanion plein) => MyDatabase.instance.pleinsDao.addOne(plein),
+        (Plein plein) => MyDatabase.instance.pleinsDao.addOne(plein),
       )
       .mapTo(true);
 

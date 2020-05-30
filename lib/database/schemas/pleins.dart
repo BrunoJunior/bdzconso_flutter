@@ -22,6 +22,5 @@ class Pleins extends Table {
   IntColumn get consoCalculee =>
       integer().map(NumericConverter.cents).withDefault(const Constant(0))();
   BoolColumn get partiel => boolean().withDefault(const Constant(false))();
-  BoolColumn get depuisPartiel =>
-      boolean().withDefault(const Constant(false))();
+  BoolColumn get traite => boolean().withDefault(const Constant(true))();
 }

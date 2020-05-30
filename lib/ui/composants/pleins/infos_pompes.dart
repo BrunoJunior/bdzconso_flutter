@@ -15,26 +15,27 @@ class InfosPompe extends StatelessWidget with DoubleTransformer {
   Widget build(BuildContext context) {
     final formBloc = BlocProvider.of<AddPleinFormBloc>(context);
     return FormCard(
-      title: 'Infos. pompe',
+      title: 'Infos pompe',
       titleIcon: Icon(Icons.local_gas_station),
       children: [
         StreamBuilder<Carburants>(
-            stream: formBloc.carburant,
-            builder: (context, snapshot) {
-              return Wrap(
-                spacing: 8.0,
-                alignment: WrapAlignment.center,
-                children: vehicule.carburantsCompatibles
-                    .map(
-                      (carburant) => CarburantChip(
-                        carburant,
-                        selectionne: carburant == snapshot.data,
-                        onPressed: () => formBloc.onCarburantChanged(carburant),
-                      ),
-                    )
-                    .toList(),
-              );
-            }),
+          stream: formBloc.carburant,
+          builder: (context, snapshot) {
+            return Wrap(
+              spacing: 8.0,
+              alignment: WrapAlignment.center,
+              children: vehicule.carburantsCompatibles
+                  .map(
+                    (carburant) => CarburantChip(
+                      carburant,
+                      selectionne: carburant == snapshot.data,
+                      onPressed: () => formBloc.onCarburantChanged(carburant),
+                    ),
+                  )
+                  .toList(),
+            );
+          },
+        ),
         StreamBuilder<bool>(
           stream: formBloc.additive,
           builder: (context, snapshot) {
@@ -46,45 +47,43 @@ class InfosPompe extends StatelessWidget with DoubleTransformer {
           },
         ),
         StreamBuilder<double>(
-            stream: formBloc.prix,
-            builder: (context, snapshot) {
-              return TextField(
-                decoration: InputDecoration(
-                  labelText: 'Prix *',
-                  suffix: Text('€'),
-                  errorText: snapshot.error,
-                ),
-                keyboardType: TextInputType.number,
-                onChanged: formBloc.onPrixChanged,
-              );
-            }),
+          stream: formBloc.prix,
+          builder: (context, snapshot) {
+            return TextField(
+              decoration: InputDecoration(
+                labelText: 'Prix *',
+                suffix: Text('€'),
+                errorText: snapshot.error,
+              ),
+              keyboardType: TextInputType.number,
+              onChanged: formBloc.onPrixChanged,
+            );
+          },
+        ),
         StreamBuilder<double>(
-            stream: formBloc.volume,
-            builder: (context, snapshot) {
-              return TextField(
-                decoration: InputDecoration(
-                  labelText: 'Volume *',
-                  suffix: Text('L'),
-                  errorText: snapshot.error,
-                ),
-                keyboardType: TextInputType.number,
-                onChanged: formBloc.onVolumeChanged,
-              );
-            }),
-        StreamBuilder<String>(
-            stream:
-                formBloc.prixLitre.transform(doubleToString(fractionDigits: 3)),
-            builder: (context, snapshot) {
-              return TextField(
-                decoration: InputDecoration(
-                  labelText: 'Prix au litre *',
-                  suffix: Text('€/L'),
-                  errorText: snapshot.error,
-                ),
-                controller: TextEditingController(text: snapshot.data),
-                keyboardType: TextInputType.number,
-              );
-            }),
+          stream: formBloc.volume,
+          builder: (context, snapshot) {
+            return TextField(
+              decoration: InputDecoration(
+                labelText: 'Volume *',
+                suffix: Text('L'),
+                errorText: snapshot.error,
+              ),
+              keyboardType: TextInputType.number,
+              onChanged: formBloc.onVolumeChanged,
+            );
+          },
+        ),
+        StreamBuilder<bool>(
+          stream: formBloc.partiel,
+          builder: (context, snapshot) {
+            return SwitchListTile(
+              title: Text("Je n'ai pas fait le plein"),
+              value: snapshot.data ?? false,
+              onChanged: formBloc.onPartielChanged,
+            );
+          },
+        ),
       ],
     );
   }

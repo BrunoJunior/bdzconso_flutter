@@ -233,11 +233,8 @@ class _EditVehiculeState extends State<EditVehicule> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SizedBox(
-          child: _zonePhoto,
-          height: 200.0,
-        ),
-        Expanded(child: _zoneForm),
+        Expanded(flex: 1, child: _zonePhoto),
+        Expanded(flex: 2, child: _zoneForm),
       ],
     );
   }

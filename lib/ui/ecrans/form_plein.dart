@@ -5,12 +5,13 @@ import 'package:conso/blocs/bloc_provider.dart';
 import 'package:conso/blocs/vehicules_bloc.dart';
 import 'package:conso/database/database.dart';
 import 'package:conso/ui/composants/loader.dart';
-import 'package:conso/ui/composants/pleins/conso_calculee.dart';
 import 'package:conso/ui/composants/pleins/infos_pompes.dart';
 import 'package:conso/ui/composants/pleins/infos_vehicule.dart';
 import 'package:conso/ui/composants/pleins/save_form.dart';
+import 'package:conso/ui/composants/pleins/valeurs_calculee.dart';
 import 'package:conso/ui/composants/pleins/zone_date.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 /// Écran
 class FormPlein extends StatelessWidget {
@@ -41,8 +42,13 @@ class FormPlein extends StatelessWidget {
               actions: [SaveForm()],
             ),
             body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              padding:
+                  const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 80.0),
               child: _Form(vehicule),
+            ),
+            bottomSheet: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              child: ValeursCalculees(),
             ),
           ),
         );
@@ -70,11 +76,9 @@ class _FormState extends State<_Form> {
         .where((saved) => saved ?? false)
         .listen((val) => Navigator.pop(context));
     return Form(
-      child: OrientationBuilder(
-        builder: (context, orientation) => Orientation.landscape == orientation
-            ? _LandscapeLayout(widget.vehicule)
-            : _PortraitLayout(widget.vehicule),
-      ),
+      child: Orientation.landscape == MediaQuery.of(context).orientation
+          ? _LandscapeLayout(widget.vehicule)
+          : _PortraitLayout(widget.vehicule),
     );
   }
 
@@ -95,7 +99,6 @@ class _PortraitLayout extends StatelessWidget {
       children: [
         ZoneDate(),
         InfosVehicule(vehicule),
-        ConsoCalculee(),
         InfosPompe(vehicule),
       ],
     );
@@ -110,7 +113,6 @@ class _LandscapeLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       children: [
-        ZoneDate(),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,8 +121,8 @@ class _LandscapeLayout extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  ZoneDate(),
                   InfosVehicule(vehicule),
-                  ConsoCalculee(),
                 ],
               ),
             ),

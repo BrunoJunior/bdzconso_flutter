@@ -1,8 +1,10 @@
 import 'package:conso/blocs/add_plein_form_bloc.dart';
 import 'package:conso/blocs/bloc_provider.dart';
+import 'package:conso/ui/composants/form_card.dart';
 import 'package:conso/ui/composants/loader.dart';
 import 'package:conso/ui/tools/form_fields_tools.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
 class ZoneDate extends StatelessWidget {
@@ -21,23 +23,29 @@ class ZoneDate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final formBloc = BlocProvider.of<AddPleinFormBloc>(context);
-    return StreamBuilder<DateTime>(
-      stream: formBloc.date,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return Loader();
-        }
-        return TextFormField(
-          decoration: InputDecoration(
-            labelText: 'Date *',
-            icon: Icon(Icons.calendar_today),
-          ),
-          controller: TextEditingController(
-              text: DateFormat.yMd().format(snapshot.data)),
-          focusNode: AlwaysDisabledFocusNode(),
-          onTap: () => _selectDate(context, snapshot.data, formBloc),
-        );
-      },
+    return FormCard(
+      title: 'Infos générales',
+      titleIcon: FaIcon(FontAwesomeIcons.infoCircle),
+      children: [
+        StreamBuilder<DateTime>(
+          stream: formBloc.date,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Loader();
+            }
+            return TextFormField(
+              decoration: InputDecoration(
+                labelText: 'Date *',
+                icon: Icon(Icons.calendar_today),
+              ),
+              controller: TextEditingController(
+                  text: DateFormat.yMd().format(snapshot.data)),
+              focusNode: AlwaysDisabledFocusNode(),
+              onTap: () => _selectDate(context, snapshot.data, formBloc),
+            );
+          },
+        ),
+      ],
     );
   }
 }

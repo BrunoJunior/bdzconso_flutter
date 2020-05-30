@@ -12,7 +12,7 @@ class InfosVehicule extends StatelessWidget {
   Widget build(BuildContext context) {
     final formBloc = BlocProvider.of<AddPleinFormBloc>(context);
     return FormCard(
-      title: 'Infos. véhicule',
+      title: 'Infos véhicule',
       titleIcon: Icon(Icons.directions_car),
       children: [
         StreamBuilder<double>(

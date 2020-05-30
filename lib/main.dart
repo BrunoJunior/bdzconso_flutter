@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 
-// TODO - Étape 5 : Prise en charge des «pleins partiels»
+// FIXME - Les données ne s'affichent pas … Loader en boucle …
+// TODO - ListViewBuilder pour la liste des pleins
+// TODO - Reformat formulaire véhicule avec pattern BloC
 // TODO - Étape ultime : utiliser la caméra pour remplir automatiquement les valeurs d'un plein (ML de Google Firebase ?)
 
 void main() async {

@@ -18,7 +18,7 @@ class VehiculeStatsWidget extends StatelessWidget {
         children: [
           ValeurUnite(
             unite: 'km',
-            valeur: (snapshot.data?.distanceCumulee ?? 0) / 100.0,
+            valeur: snapshot.data?.distanceCumulee ?? 0,
           ),
           ValeurUnite(
             unite: 'l/100km',
