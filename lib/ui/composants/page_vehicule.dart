@@ -4,12 +4,25 @@ import 'package:conso/database/database.dart';
 import 'package:conso/ui/composants/loader.dart';
 import 'package:flutter/material.dart';
 
+typedef PageVehiculeBuilder = Widget Function(
+    BuildContext context, Vehicule vehicule);
+
 class PageVehicule extends StatelessWidget {
-  final Widget Function(BuildContext context, Vehicule vehicule) bodyBuilder;
+  final PageVehiculeBuilder bodyBuilder;
+  final PageVehiculeBuilder bottomSheetBuilder;
+  final Widget Function(
+          BuildContext context, Vehicule vehicule, Scaffold scaffold)
+      scaffoldBuilder;
   final Widget fab;
   final String title;
 
-  PageVehicule({this.bodyBuilder, this.fab, this.title});
+  PageVehicule({
+    this.bodyBuilder,
+    this.fab,
+    this.title,
+    this.bottomSheetBuilder,
+    this.scaffoldBuilder,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +44,25 @@ class PageVehicule extends StatelessWidget {
                     Text(title),
                   ],
                 );
-          return Scaffold(
+          final _body = null == bodyBuilder
+              ? const SizedBox.shrink()
+              : bodyBuilder(context, snapshot.data);
+          final _bottom = (null == bottomSheetBuilder || !snapshot.hasData)
+              ? null
+              : bottomSheetBuilder(context, snapshot.data);
+          final _scaffold = Scaffold(
             appBar: AppBar(title: _title),
-            body: null == bodyBuilder
-                ? const SizedBox.shrink()
-                : bodyBuilder(context, snapshot.data),
+            body: _body,
             floatingActionButton: fab,
+            bottomSheet: _bottom,
           );
+          return (null == scaffoldBuilder)
+              ? _scaffold
+              : scaffoldBuilder(
+                  context,
+                  snapshot.data,
+                  _scaffold,
+                );
         });
   }
 }

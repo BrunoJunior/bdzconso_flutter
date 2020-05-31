@@ -1,6 +1,6 @@
 import 'package:conso/blocs/stats_bloc.dart';
-import 'package:conso/database/dao/pleins_dao.dart';
 import 'package:conso/database/database.dart';
+import 'package:conso/models/stats.dart';
 import 'package:conso/ui/composants/valeur_unite.dart';
 import 'package:flutter/material.dart';
 

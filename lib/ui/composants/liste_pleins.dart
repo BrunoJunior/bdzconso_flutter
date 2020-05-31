@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class ListePleins extends StatelessWidget {
+  const ListePleins();
+
   @override
   Widget build(BuildContext context) {
     PleinsBloc pleinsBloc = BlocProvider.of<PleinsBloc>(context);
@@ -18,8 +20,13 @@ class ListePleins extends StatelessWidget {
         }
         return ListView.builder(
           itemCount: listSize,
-          itemBuilder: (context, index) =>
-              PleinListElement(snapshot.data[index]),
+          itemBuilder: (context, index) {
+            final plein = snapshot.data[index];
+            return PleinListElement(
+              plein,
+              onDismissed: (direction) => pleinsBloc.inSupprimer.add(plein),
+            );
+          },
         );
       },
     );

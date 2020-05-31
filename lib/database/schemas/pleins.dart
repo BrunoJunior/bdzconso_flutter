@@ -23,4 +23,6 @@ class Pleins extends Table {
       integer().map(NumericConverter.cents).withDefault(const Constant(0))();
   BoolColumn get partiel => boolean().withDefault(const Constant(false))();
   BoolColumn get traite => boolean().withDefault(const Constant(true))();
+  IntColumn get validateur =>
+      integer().nullable().customConstraint('REFERENCES pleins(id)')();
 }

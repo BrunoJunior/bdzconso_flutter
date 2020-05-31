@@ -1,63 +1,10 @@
 import 'package:conso/database/database.dart';
 import 'package:conso/database/schemas/pleins.dart';
+import 'package:conso/models/stats.dart';
+import 'package:intl/intl.dart';
 import 'package:moor/moor.dart';
 
 part 'pleins_dao.g.dart';
-
-class Stats {
-  final double volumeCumule;
-  final double montantCumule;
-  final double distanceCumulee;
-  final int count;
-
-  const Stats({
-    @required this.volumeCumule,
-    @required this.montantCumule,
-    @required this.distanceCumulee,
-    @required this.count,
-  });
-
-  const Stats.vide()
-      : count = 0,
-        distanceCumulee = 0,
-        montantCumule = 0,
-        volumeCumule = 0;
-
-  factory Stats.fromPlein(Plein plein) {
-    return Stats(
-        volumeCumule: plein.volume,
-        montantCumule: plein.montant,
-        distanceCumulee: plein.distance,
-        count: 1);
-  }
-
-  double get consoMoyenne {
-    if (0 == (distanceCumulee ?? 0)) {
-      return 0.0;
-    }
-    return 100 * (volumeCumule ?? 0) / distanceCumulee;
-  }
-
-  Stats operator +(Stats other) {
-    return Stats(
-      volumeCumule: (volumeCumule ?? 0.0) + (other?.volumeCumule ?? 0.0),
-      montantCumule: (montantCumule ?? 0.0) + (other?.montantCumule ?? 0.0),
-      distanceCumulee:
-          (distanceCumulee ?? 0.0) + (other?.distanceCumulee ?? 0.0),
-      count: (count ?? 0) + (other.count ?? 0),
-    );
-  }
-
-  Stats operator -(Stats other) {
-    return Stats(
-      volumeCumule: (volumeCumule ?? 0.0) - (other?.volumeCumule ?? 0.0),
-      montantCumule: (montantCumule ?? 0.0) - (other?.montantCumule ?? 0.0),
-      distanceCumulee:
-          (distanceCumulee ?? 0.0) - (other?.distanceCumulee ?? 0.0),
-      count: (count ?? 0) - (other.count ?? 0),
-    );
-  }
-}
 
 @UseDao(tables: [Pleins])
 class PleinsDao extends DatabaseAccessor<MyDatabase> with _$PleinsDaoMixin {
@@ -143,10 +90,12 @@ class PleinsDao extends DatabaseAccessor<MyDatabase> with _$PleinsDaoMixin {
 
   /// Ajouter un plein
   Future<Plein> addOne(Plein entry) => transaction(() async {
-        Plein nouveauPlein = entry;
-        // Si on insère un plein complet, on doit vérifier qu'il n'y a pas de partiels non traités avant
+        Plein nouveauPlein =
+            entry.partiel ? entry : await remplirConsoCalculee(entry);
+        // On insère le nouveau plein
+        final id = await into(pleins).insert(nouveauPlein.toCompanion(true));
+        // Si on insère un plein complet, on doit vérifier qu'il n'y a pas de partiels non traités
         if (!entry.partiel) {
-          nouveauPlein = await remplirConsoCalculee(entry);
           // On va lisser la conso calculée de tous les pleins partiels non traités avec la conso moyenne
           // Et on précise qu'il est donc traité
           (update(pleins)..where(_partielsATraiter(nouveauPlein.idVehicule)))
@@ -154,16 +103,46 @@ class PleinsDao extends DatabaseAccessor<MyDatabase> with _$PleinsDaoMixin {
             PleinsCompanion(
               consoCalculee: Value(nouveauPlein.consoCalculee),
               traite: Value(true),
+              // On rattache le plein complet utilisé pour compléter les partiels précédents
+              validateur: Value(id),
             ),
           );
         }
-        // On insère ensuite le nouveau plein
-        final id = await into(pleins).insert(nouveauPlein.toCompanion(true));
         return nouveauPlein.copyWith(id: id);
       });
 
   /// Supprimer un plein
-  Future<int> deleteOne(Plein plein) {
-    return (delete(pleins)..whereSamePrimaryKey(plein)).go();
+  Future<Plein> deleteOne(Plein plein) async {
+    final isPartiel = plein.partiel ?? false;
+    final isTraite = plein.traite ?? false;
+    // On ne peut supprimer un plein partiel validé
+    if (isPartiel && isTraite) {
+      final validateur = await (select(pleins)
+            ..where((tbl) => tbl.id.equals(plein.validateur)))
+          .getSingle();
+      throw Exception(
+          'Ce plein partiel a été validé par le plein du ${DateFormat.yMd().format(validateur.date)} ! Veuillez supprimer ce dernier en premier lieu !');
+    }
+    return await transaction(() async {
+      // Lors de la suppression d'un plein validant un/des partiels
+      // On invalide les partiels liés
+      if (!isPartiel) {
+        await (update(pleins)
+              ..where((tbl) =>
+                  tbl.idVehicule.equals(plein.idVehicule) &
+                  tbl.validateur.equals(plein.id)))
+            .write(
+          PleinsCompanion(
+            validateur: Value(null),
+            traite: Value(false),
+            consoCalculee: Value(0.0),
+          ),
+        );
+      }
+      // Puis on supprime le plein
+      return (delete(pleins)..whereSamePrimaryKey(plein))
+          .go()
+          .then((v) => plein);
+    });
   }
 }

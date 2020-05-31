@@ -1,7 +1,7 @@
 import 'package:conso/blocs/bloc_provider.dart';
 import 'package:conso/blocs/stats_bloc.dart';
 import 'package:conso/blocs/vehicules_bloc.dart';
-import 'package:conso/database/dao/pleins_dao.dart';
+import 'package:conso/models/stats.dart';
 import 'package:conso/ui/composants/bouncing_fab.dart';
 import 'package:conso/ui/composants/loader.dart';
 import 'package:conso/ui/composants/page_vehicule.dart';
