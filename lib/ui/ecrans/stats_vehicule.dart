@@ -31,7 +31,6 @@ class StatsVehiculeScreen extends StatelessWidget {
         StatCard.fromDouble(
           title: 'Distance',
           value: stats?.distanceCumulee ?? 0,
-          fractionDigits: 2,
           suffix: 'km',
           icon: FaIcon(FontAwesomeIcons.car),
           mainAxisSize: MainAxisSize.max,
@@ -39,14 +38,12 @@ class StatsVehiculeScreen extends StatelessWidget {
         StatCard.fromDouble(
           title: 'Dépense',
           value: stats?.montantCumule ?? 0,
-          fractionDigits: 2,
           suffix: '€',
           icon: FaIcon(FontAwesomeIcons.receipt),
         ),
         StatCard.fromDouble(
           title: 'Volume',
           value: stats?.volumeCumule ?? 0,
-          fractionDigits: 2,
           suffix: 'L',
           icon: FaIcon(FontAwesomeIcons.water),
         ),
@@ -79,6 +76,7 @@ class StatsVehiculeScreen extends StatelessWidget {
             return Loader();
           }
           return PageVehicule(
+            title: 'Statistiques générales',
             bodyBuilder: (context, vehicule) {
               return OrientationBuilder(
                 builder: (context, orientation) => _getGrid(

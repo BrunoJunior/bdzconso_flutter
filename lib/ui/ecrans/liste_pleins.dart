@@ -9,6 +9,7 @@ class EcranListePleins extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PageVehicule(
+      title: 'Liste des pleins',
       bodyBuilder: (context, vehicule) => BlocProvider<PleinsBloc>(
         blocBuilder: () => PleinsBloc(vehicule: vehicule),
         child: ListePleins(),

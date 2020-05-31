@@ -8,6 +8,7 @@ class GraphsVehicule extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PageVehicule(
+      title: 'Suivi graphique sur 1 an',
       bodyBuilder: (context, vehicule) => Padding(
         padding: const EdgeInsets.all(10.0),
         child: BlocProvider(

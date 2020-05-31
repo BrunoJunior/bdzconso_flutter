@@ -8,6 +8,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
 class ZoneDate extends StatelessWidget {
+  const ZoneDate();
+
   Future<void> _selectDate(
       BuildContext context, DateTime data, AddPleinFormBloc formBloc) async {
     final DateTime now = DateTime.now();
@@ -25,18 +27,18 @@ class ZoneDate extends StatelessWidget {
     final formBloc = BlocProvider.of<AddPleinFormBloc>(context);
     return FormCard(
       title: 'Infos générales',
-      titleIcon: FaIcon(FontAwesomeIcons.infoCircle),
+      titleIcon: const FaIcon(FontAwesomeIcons.infoCircle),
       children: [
         StreamBuilder<DateTime>(
           stream: formBloc.date,
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return Loader();
+              return const Loader();
             }
             return TextFormField(
               decoration: InputDecoration(
                 labelText: 'Date *',
-                icon: Icon(Icons.calendar_today),
+                icon: const Icon(Icons.calendar_today),
               ),
               controller: TextEditingController(
                   text: DateFormat.yMd().format(snapshot.data)),

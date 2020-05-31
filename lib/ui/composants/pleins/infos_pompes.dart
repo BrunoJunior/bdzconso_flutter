@@ -5,18 +5,26 @@ import 'package:conso/enums/carburants.dart';
 import 'package:conso/transformers/double_transformer.dart';
 import 'package:conso/ui/composants/carburant_chip.dart';
 import 'package:conso/ui/composants/form_card.dart';
+import 'package:conso/ui/composants/pleins/focus_changer.dart';
 import 'package:flutter/material.dart';
 
-class InfosPompe extends StatelessWidget with DoubleTransformer {
+class InfosPompe extends StatelessWidget with DoubleTransformer, FocusChanger {
   final Vehicule vehicule;
-  InfosPompe(this.vehicule);
+  final FocusNode firstFocusNode;
+  final ValueChanged<String> onSubmit;
+  final bool autofocus;
+  final FocusNode _prixFocus = FocusNode();
+  final FocusNode _volumeFocus = FocusNode();
+
+  InfosPompe(this.vehicule,
+      {this.firstFocusNode, this.onSubmit, this.autofocus = false});
 
   @override
   Widget build(BuildContext context) {
     final formBloc = BlocProvider.of<AddPleinFormBloc>(context);
     return FormCard(
       title: 'Infos pompe',
-      titleIcon: Icon(Icons.local_gas_station),
+      titleIcon: const Icon(Icons.local_gas_station),
       children: [
         StreamBuilder<Carburants>(
           stream: formBloc.carburant,
@@ -40,7 +48,7 @@ class InfosPompe extends StatelessWidget with DoubleTransformer {
           stream: formBloc.additive,
           builder: (context, snapshot) {
             return SwitchListTile(
-              title: Text('Additivé'),
+              title: const Text('Additivé'),
               value: snapshot.data ?? false,
               onChanged: formBloc.onAdditiveChanged,
             );
@@ -50,9 +58,14 @@ class InfosPompe extends StatelessWidget with DoubleTransformer {
           stream: formBloc.prix,
           builder: (context, snapshot) {
             return TextField(
+              focusNode: firstFocusNode ?? _prixFocus,
+              autofocus: autofocus,
+              textInputAction: TextInputAction.next,
+              onSubmitted: (value) => fieldFocusChange(
+                  context, firstFocusNode ?? _prixFocus, _volumeFocus),
               decoration: InputDecoration(
                 labelText: 'Prix *',
-                suffix: Text('€'),
+                suffix: const Text('€'),
                 errorText: snapshot.error,
               ),
               keyboardType: TextInputType.number,
@@ -64,9 +77,16 @@ class InfosPompe extends StatelessWidget with DoubleTransformer {
           stream: formBloc.volume,
           builder: (context, snapshot) {
             return TextField(
+              focusNode: _volumeFocus,
+              onSubmitted: (value) {
+                _volumeFocus.unfocus();
+                if (null != onSubmit) {
+                  onSubmit(value);
+                }
+              },
               decoration: InputDecoration(
                 labelText: 'Volume *',
-                suffix: Text('L'),
+                suffix: const Text('L'),
                 errorText: snapshot.error,
               ),
               keyboardType: TextInputType.number,
@@ -78,7 +98,7 @@ class InfosPompe extends StatelessWidget with DoubleTransformer {
           stream: formBloc.partiel,
           builder: (context, snapshot) {
             return SwitchListTile(
-              title: Text("Je n'ai pas fait le plein"),
+              title: const Text("Je n'ai pas fait le plein"),
               value: snapshot.data ?? false,
               onChanged: formBloc.onPartielChanged,
             );

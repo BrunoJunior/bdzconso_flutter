@@ -3,6 +3,7 @@ import 'package:conso/blocs/bloc_provider.dart';
 import 'package:flutter/material.dart';
 
 class SaveForm extends StatelessWidget {
+  const SaveForm();
   @override
   Widget build(BuildContext context) {
     final formBloc = BlocProvider.of<AddPleinFormBloc>(context);
@@ -10,7 +11,7 @@ class SaveForm extends StatelessWidget {
         stream: formBloc.isValid,
         builder: (context, snapshot) {
           return IconButton(
-            icon: Icon(Icons.save),
+            icon: const Icon(Icons.save),
             onPressed:
                 (snapshot.data ?? false) ? () => formBloc.onSubmit : null,
           );

@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/streams.dart';
 
 class ValeursCalculees extends StatelessWidget {
+  const ValeursCalculees();
+
   @override
   Widget build(BuildContext context) {
     final formBloc = BlocProvider.of<AddPleinFormBloc>(context);
@@ -17,7 +19,7 @@ class ValeursCalculees extends StatelessWidget {
             stream: formBloc.partiel,
             builder: (context, snapshot) {
               if (snapshot.data ?? false) {
-                return SizedBox.shrink();
+                return const SizedBox.shrink();
               }
               return Expanded(
                 child: Padding(
@@ -49,8 +51,8 @@ class ValeursCalculees extends StatelessWidget {
                                   visible: diff != 0,
                                   child: Text(
                                     ' (${diff > 0 ? '+' : ''}${NumericConverter.cents.getStringFromNumber(diff)})',
-                                    style:
-                                        TextStyle(fontStyle: FontStyle.italic),
+                                    style: const TextStyle(
+                                        fontStyle: FontStyle.italic),
                                   ),
                                 );
                               }),

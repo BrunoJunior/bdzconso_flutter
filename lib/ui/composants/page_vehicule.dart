@@ -7,26 +7,37 @@ import 'package:flutter/material.dart';
 class PageVehicule extends StatelessWidget {
   final Widget Function(BuildContext context, Vehicule vehicule) bodyBuilder;
   final Widget fab;
+  final String title;
 
-  PageVehicule({this.bodyBuilder, this.fab});
+  PageVehicule({this.bodyBuilder, this.fab, this.title});
 
   @override
   Widget build(BuildContext context) {
     final VehiculesBloc vehiculesBloc = BlocProvider.of<VehiculesBloc>(context);
     return StreamBuilder<Vehicule>(
-      stream: vehiculesBloc.vehiculeSelectionne,
-      builder: (context, snapshot) => null == snapshot.data
-          ? Loader()
-          : Scaffold(
-              appBar: AppBar(
-                title: Text(
-                    '${snapshot.data.marque} ${snapshot.data.modele} (${snapshot.data.annee})'),
-              ),
-              body: null == bodyBuilder
-                  ? SizedBox.shrink()
-                  : bodyBuilder(context, snapshot.data),
-              floatingActionButton: fab,
-            ),
-    );
+        stream: vehiculesBloc.vehiculeSelectionne,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Loader();
+          }
+          final strVehicule =
+              '${snapshot.data.marque} ${snapshot.data.modele} (${snapshot.data.annee})';
+          final _title = (title ?? '').isEmpty
+              ? Text(strVehicule)
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(strVehicule, style: const TextStyle(fontSize: 10.0)),
+                    Text(title),
+                  ],
+                );
+          return Scaffold(
+            appBar: AppBar(title: _title),
+            body: null == bodyBuilder
+                ? const SizedBox.shrink()
+                : bodyBuilder(context, snapshot.data),
+            floatingActionButton: fab,
+          );
+        });
   }
 }

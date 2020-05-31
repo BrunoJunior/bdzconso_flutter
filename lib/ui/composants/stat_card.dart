@@ -75,6 +75,7 @@ class StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: null == onTap ? null : Theme.of(context).buttonColor,
       elevation: null == onTap ? 0.0 : 6.0,
       child: InkWell(
         onTap: onTap,

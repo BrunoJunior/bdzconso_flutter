@@ -67,7 +67,14 @@ class PleinsDao extends DatabaseAccessor<MyDatabase> with _$PleinsDaoMixin {
 
   /// Scrute tous les pleins d'un véhicule
   Stream<List<Plein>> watchAllForVehicule(int idVehicule) {
-    return (select(pleins)..where((tbl) => tbl.idVehicule.equals(idVehicule)))
+    return (select(pleins)
+          ..where((tbl) => tbl.idVehicule.equals(idVehicule))
+          ..orderBy([
+            (tbl) => OrderingTerm(
+                  expression: tbl.date,
+                  mode: OrderingMode.desc,
+                )
+          ]))
         .watch();
   }
 

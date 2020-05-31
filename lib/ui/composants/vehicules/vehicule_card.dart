@@ -11,13 +11,12 @@ import 'package:conso/ui/composants/vehicules/vehicule_title_widget.dart';
 import 'package:conso/ui/router.dart';
 import 'package:flutter/material.dart';
 
-class VehiculeWidget extends StatelessWidget {
+class VehiculeCard extends StatelessWidget {
   final Vehicule vehicule;
 
-  VehiculeWidget(this.vehicule);
+  VehiculeCard(this.vehicule);
 
-  static VehiculeWidget fromVehicule(Vehicule vehicule) =>
-      VehiculeWidget(vehicule);
+  static VehiculeCard fromVehicule(Vehicule vehicule) => VehiculeCard(vehicule);
 
   _onClickPicture(context) async {
     try {
@@ -51,7 +50,7 @@ class VehiculeWidget extends StatelessWidget {
                 bottom: 5.0,
               ),
               child: RawMaterialButton(
-                fillColor: Color(0xFF212121),
+                fillColor: Theme.of(context).cardColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(20.0),

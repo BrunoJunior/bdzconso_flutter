@@ -5,6 +5,7 @@ import 'package:conso/blocs/bloc_provider.dart';
 import 'package:conso/blocs/vehicules_bloc.dart';
 import 'package:conso/database/database.dart';
 import 'package:conso/ui/composants/loader.dart';
+import 'package:conso/ui/composants/pleins/focus_changer.dart';
 import 'package:conso/ui/composants/pleins/infos_pompes.dart';
 import 'package:conso/ui/composants/pleins/infos_vehicule.dart';
 import 'package:conso/ui/composants/pleins/save_form.dart';
@@ -23,7 +24,7 @@ class FormPlein extends StatelessWidget {
       builder: (context, snapshot) {
         final vehicule = snapshot.data;
         if (null == vehicule) {
-          return Loader();
+          return const Loader();
         }
         return BlocProvider<AddPleinFormBloc>(
           blocBuilder: () => AddPleinFormBloc(vehicule),
@@ -34,12 +35,12 @@ class FormPlein extends StatelessWidget {
                 children: [
                   Text(
                     '${vehicule.marque} ${vehicule.modele} (${vehicule.annee})',
-                    style: TextStyle(fontSize: 10.0),
+                    style: const TextStyle(fontSize: 10.0),
                   ),
-                  Text('Nouveau plein'),
+                  const Text('Nouveau plein'),
                 ],
               ),
-              actions: [SaveForm()],
+              actions: [const SaveForm()],
             ),
             body: Padding(
               padding:
@@ -48,7 +49,7 @@ class FormPlein extends StatelessWidget {
             ),
             bottomSheet: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: ValeursCalculees(),
+              child: const ValeursCalculees(),
             ),
           ),
         );
@@ -60,6 +61,8 @@ class FormPlein extends StatelessWidget {
 /// Formulaire
 class _Form extends StatefulWidget {
   final Vehicule vehicule;
+  final FocusNode vehiculeFocus = FocusNode();
+  final FocusNode pompeFocus = FocusNode();
   _Form(this.vehicule);
   @override
   _FormState createState() => _FormState();
@@ -77,8 +80,8 @@ class _FormState extends State<_Form> {
         .listen((val) => Navigator.pop(context));
     return Form(
       child: Orientation.landscape == MediaQuery.of(context).orientation
-          ? _LandscapeLayout(widget.vehicule)
-          : _PortraitLayout(widget.vehicule),
+          ? _LandscapeLayout(widget)
+          : _PortraitLayout(widget),
     );
   }
 
@@ -90,25 +93,35 @@ class _FormState extends State<_Form> {
 }
 
 /// Portrait
-class _PortraitLayout extends StatelessWidget {
-  final Vehicule vehicule;
-  _PortraitLayout(this.vehicule);
+class _PortraitLayout extends StatelessWidget with FocusChanger {
+  final _Form form;
+  _PortraitLayout(this.form);
   @override
   Widget build(BuildContext context) {
     return ListView(
       children: [
-        ZoneDate(),
-        InfosVehicule(vehicule),
-        InfosPompe(vehicule),
+        const ZoneDate(),
+        InfosVehicule(
+          form.vehicule,
+          firstFocusNode: form.vehiculeFocus,
+          autofocus: true,
+          onSubmit: (v) =>
+              fieldFocusChange(context, form.vehiculeFocus, form.pompeFocus),
+        ),
+        InfosPompe(
+          form.vehicule,
+          firstFocusNode: form.pompeFocus,
+          onSubmit: (v) => form.pompeFocus.unfocus(),
+        ),
       ],
     );
   }
 }
 
 /// Paysage
-class _LandscapeLayout extends StatelessWidget {
-  final Vehicule vehicule;
-  _LandscapeLayout(this.vehicule);
+class _LandscapeLayout extends StatelessWidget with FocusChanger {
+  final _Form form;
+  _LandscapeLayout(this.form);
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -121,13 +134,27 @@ class _LandscapeLayout extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  ZoneDate(),
-                  InfosVehicule(vehicule),
+                  const ZoneDate(),
+                  InfosVehicule(
+                    form.vehicule,
+                    autofocus: true,
+                    firstFocusNode: form.vehiculeFocus,
+                    onSubmit: (v) => fieldFocusChange(
+                      context,
+                      form.vehiculeFocus,
+                      form.pompeFocus,
+                    ),
+                  ),
                 ],
               ),
             ),
-            SizedBox(width: 10.0),
-            Expanded(child: InfosPompe(vehicule)),
+            const SizedBox(width: 10.0),
+            Expanded(
+                child: InfosPompe(
+              form.vehicule,
+              firstFocusNode: form.pompeFocus,
+              onSubmit: (v) => form.pompeFocus.unfocus(),
+            )),
           ],
         )
       ],

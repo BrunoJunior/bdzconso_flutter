@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 
-// TODO - ListViewBuilder pour la liste des pleins (avec détail pour un plein)
 // TODO - Reformat formulaire véhicule avec pattern BloC
 // TODO - Étape ultime : utiliser la caméra pour remplir automatiquement les valeurs d'un plein (ML de Google Firebase ?)
 
@@ -29,11 +28,16 @@ class MyApp extends StatelessWidget {
       title: 'Ma conso',
       theme: ThemeData.dark().copyWith(
         backgroundColor: Color(0xFF212121),
+        scaffoldBackgroundColor: Color(0xFF212121),
         accentColor: Color(0xFFbbe1fa),
         primaryColor: Color(0xFF0f4c75),
-        buttonColor: Color(0xFF3282b8),
+        buttonColor: Color(0x803282b8),
+        cardColor: Color(0x800f4c75),
+        bottomSheetTheme: ThemeData.dark().bottomSheetTheme.copyWith(
+              backgroundColor: Color(0xFF212121),
+            ),
         floatingActionButtonTheme: FloatingActionButtonThemeData(
-            backgroundColor: Color(0xFFbbe1fa),
+            backgroundColor: Color(0xFF4978a4),
             foregroundColor: Color(0xFF1b262c)),
       ),
       localizationsDelegates: [
