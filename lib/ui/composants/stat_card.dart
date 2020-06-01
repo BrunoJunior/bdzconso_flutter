@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:conso/database/converters/numeric_converter.dart';
-import 'package:conso/ui/composants/card_title.dart';
 import 'package:flutter/material.dart';
+import 'package:fueltter/database/converters/numeric_converter.dart';
+import 'package:fueltter/ui/composants/card_title.dart';
 
 class StatCard extends StatelessWidget {
   final String title;

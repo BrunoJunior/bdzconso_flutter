@@ -1,4 +1,4 @@
-package com.bdesprez.conso
+package com.bdesprez.fueltter
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity

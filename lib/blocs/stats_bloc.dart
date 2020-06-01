@@ -1,6 +1,6 @@
-import 'package:conso/blocs/bloc.dart';
-import 'package:conso/database/database.dart';
-import 'package:conso/models/stats.dart';
+import 'package:fueltter/blocs/bloc.dart';
+import 'package:fueltter/database/database.dart';
+import 'package:fueltter/models/stats.dart';
 import 'package:flutter/material.dart';
 
 class StatsBloc extends Bloc {

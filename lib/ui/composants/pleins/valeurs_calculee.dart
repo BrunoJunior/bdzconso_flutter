@@ -1,9 +1,9 @@
-import 'package:conso/blocs/add_plein_form_bloc.dart';
-import 'package:conso/blocs/bloc_provider.dart';
-import 'package:conso/database/converters/numeric_converter.dart';
-import 'package:conso/ui/composants/form_card.dart';
-import 'package:conso/ui/composants/valeur_unite.dart';
 import 'package:flutter/material.dart';
+import 'package:fueltter/blocs/add_plein_form_bloc.dart';
+import 'package:fueltter/blocs/bloc_provider.dart';
+import 'package:fueltter/database/converters/numeric_converter.dart';
+import 'package:fueltter/ui/composants/form_card.dart';
+import 'package:fueltter/ui/composants/valeur_unite.dart';
 import 'package:rxdart/streams.dart';
 
 class ValeursCalculees extends StatelessWidget {

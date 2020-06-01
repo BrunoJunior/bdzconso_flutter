@@ -1,10 +1,10 @@
-import 'package:conso/blocs/bloc_provider.dart';
-import 'package:conso/blocs/graph_bloc.dart';
-import 'package:conso/blocs/pleins_bloc.dart';
-import 'package:conso/ui/composants/graphs/graph_comparator.dart';
-import 'package:conso/ui/composants/graphs/graph_selector.dart';
-import 'package:conso/ui/composants/graphs/vehicule_graph.dart';
 import 'package:flutter/material.dart';
+import 'package:fueltter/blocs/bloc_provider.dart';
+import 'package:fueltter/blocs/graph_bloc.dart';
+import 'package:fueltter/blocs/pleins_bloc.dart';
+import 'package:fueltter/ui/composants/graphs/graph_comparator.dart';
+import 'package:fueltter/ui/composants/graphs/graph_selector.dart';
+import 'package:fueltter/ui/composants/graphs/vehicule_graph.dart';
 
 class GraphView extends StatelessWidget {
   @override

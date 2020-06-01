@@ -1,12 +1,12 @@
 import 'dart:io';
 
-import 'package:conso/database/converters/carburants_converter.dart';
-import 'package:conso/database/converters/numeric_converter.dart';
-import 'package:conso/database/dao/pleins_dao.dart';
-import 'package:conso/database/dao/vehicules_dao.dart';
-import 'package:conso/database/schemas/pleins.dart';
-import 'package:conso/database/schemas/vehicules.dart';
-import 'package:conso/enums/carburants.dart';
+import 'package:fueltter/database/converters/carburants_converter.dart';
+import 'package:fueltter/database/converters/numeric_converter.dart';
+import 'package:fueltter/database/dao/pleins_dao.dart';
+import 'package:fueltter/database/dao/vehicules_dao.dart';
+import 'package:fueltter/database/schemas/pleins.dart';
+import 'package:fueltter/database/schemas/vehicules.dart';
+import 'package:fueltter/enums/carburants.dart';
 import 'package:moor/moor.dart';
 import 'package:moor_ffi/moor_ffi.dart';
 import 'package:path/path.dart' as p;

@@ -1,4 +1,4 @@
-import 'package:conso/database/converters/carburants_converter.dart';
+import 'package:fueltter/database/converters/carburants_converter.dart';
 import 'package:moor/moor.dart';
 
 class Vehicules extends Table {

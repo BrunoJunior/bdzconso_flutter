@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:conso/enums/carburants.dart';
+import 'package:fueltter/enums/carburants.dart';
 import 'package:moor/moor.dart';
 
 const Map<Carburants, String> _mapCarburants = {

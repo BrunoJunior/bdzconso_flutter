@@ -1,12 +1,12 @@
-import 'package:conso/blocs/bloc_provider.dart';
-import 'package:conso/blocs/vehicules_bloc.dart';
-import 'package:conso/services/camera_service.dart';
-import 'package:conso/ui/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:fueltter/blocs/bloc_provider.dart';
+import 'package:fueltter/blocs/vehicules_bloc.dart';
+import 'package:fueltter/services/camera_service.dart';
+import 'package:fueltter/ui/router.dart';
 import 'package:intl/intl.dart';
 
-// TODO - Logo appli
+// TODO - Import / Export : Google Drive / Local / Dropbox / BdzConso Web
 // TODO - Reformat formulaire véhicule avec pattern BloC
 // TODO - Étape ultime : utiliser la caméra pour remplir automatiquement les valeurs d'un plein (ML de Google Firebase ?)
 
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Ma conso',
+      title: 'Fueltter',
       theme: ThemeData.dark().copyWith(
         backgroundColor: Color(0xFF212121),
         scaffoldBackgroundColor: Color(0xFF212121),

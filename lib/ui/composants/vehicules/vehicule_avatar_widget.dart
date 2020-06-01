@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:conso/database/database.dart';
-import 'package:conso/services/vehicule_photo_service.dart';
 import 'package:flutter/material.dart';
+import 'package:fueltter/database/database.dart';
+import 'package:fueltter/services/vehicule_photo_service.dart';
 
 class VehiculeAvatarWidget extends StatelessWidget {
   final File photo;

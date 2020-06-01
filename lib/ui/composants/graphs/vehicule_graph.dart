@@ -1,9 +1,9 @@
-import 'package:conso/blocs/bloc_provider.dart';
-import 'package:conso/blocs/graph_bloc.dart';
-import 'package:conso/models/graph_data.dart';
-import 'package:conso/ui/composants/loader.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:fueltter/blocs/bloc_provider.dart';
+import 'package:fueltter/blocs/graph_bloc.dart';
+import 'package:fueltter/models/graph_data.dart';
+import 'package:fueltter/ui/composants/loader.dart';
 
 class VehiculeGraph extends StatelessWidget {
   List<LineChartBarData> _getLines(GraphData data) {

@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:conso/database/database.dart';
-import 'package:conso/enums/carburants.dart';
-import 'package:conso/services/vehicule_photo_service.dart';
-import 'package:conso/ui/composants/carburant_chip.dart';
-import 'package:conso/ui/tools/form_fields_tools.dart';
 import 'package:flutter/material.dart';
+import 'package:fueltter/database/database.dart';
+import 'package:fueltter/enums/carburants.dart';
+import 'package:fueltter/services/vehicule_photo_service.dart';
+import 'package:fueltter/ui/composants/carburant_chip.dart';
+import 'package:fueltter/ui/tools/form_fields_tools.dart';
 import 'package:moor/moor.dart' show Value;
 
 class EditVehicule extends StatefulWidget {

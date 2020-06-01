@@ -1,12 +1,12 @@
-import 'package:conso/services/camera_service.dart';
-import 'package:conso/ui/ecrans/edit_vehicule.dart';
-import 'package:conso/ui/ecrans/form_plein.dart';
-import 'package:conso/ui/ecrans/graphs_vehicule.dart';
-import 'package:conso/ui/ecrans/home.dart';
-import 'package:conso/ui/ecrans/liste_pleins.dart';
-import 'package:conso/ui/ecrans/stats_vehicule.dart';
-import 'package:conso/ui/ecrans/take_picture.dart';
 import 'package:flutter/material.dart';
+import 'package:fueltter/services/camera_service.dart';
+import 'package:fueltter/ui/ecrans/edit_vehicule.dart';
+import 'package:fueltter/ui/ecrans/form_plein.dart';
+import 'package:fueltter/ui/ecrans/graphs_vehicule.dart';
+import 'package:fueltter/ui/ecrans/home.dart';
+import 'package:fueltter/ui/ecrans/liste_pleins.dart';
+import 'package:fueltter/ui/ecrans/stats_vehicule.dart';
+import 'package:fueltter/ui/ecrans/take_picture.dart';
 
 const String HomeRoute = '/';
 const String EditVehiculeRoute = 'edit-vehicule';

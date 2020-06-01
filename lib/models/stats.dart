@@ -1,5 +1,5 @@
-import 'package:conso/database/database.dart';
 import 'package:flutter/foundation.dart';
+import 'package:fueltter/database/database.dart';
 
 class Stats {
   final double volumeCumule;

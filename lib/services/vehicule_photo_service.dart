@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:conso/database/database.dart';
-import 'package:conso/ui/router.dart';
 import 'package:file_utils/file_utils.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:fueltter/database/database.dart';
+import 'package:fueltter/ui/router.dart';
 import 'package:moor/moor.dart' show Value;
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';

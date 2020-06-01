@@ -1,9 +1,9 @@
-import 'package:conso/blocs/add_plein_form_bloc.dart';
-import 'package:conso/blocs/bloc_provider.dart';
-import 'package:conso/database/database.dart';
-import 'package:conso/ui/composants/form_card.dart';
-import 'package:conso/ui/composants/pleins/focus_changer.dart';
 import 'package:flutter/material.dart';
+import 'package:fueltter/blocs/add_plein_form_bloc.dart';
+import 'package:fueltter/blocs/bloc_provider.dart';
+import 'package:fueltter/database/database.dart';
+import 'package:fueltter/ui/composants/form_card.dart';
+import 'package:fueltter/ui/composants/pleins/focus_changer.dart';
 
 class InfosVehicule extends StatelessWidget with FocusChanger {
   final Vehicule vehicule;

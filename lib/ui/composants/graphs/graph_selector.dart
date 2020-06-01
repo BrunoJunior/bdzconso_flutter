@@ -1,6 +1,6 @@
-import 'package:conso/blocs/bloc_provider.dart';
-import 'package:conso/blocs/graph_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:fueltter/blocs/bloc_provider.dart';
+import 'package:fueltter/blocs/graph_bloc.dart';
 
 class GraphSelector extends StatelessWidget {
   @override

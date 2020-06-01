@@ -1,8 +1,8 @@
-import 'package:conso/database/database.dart';
-import 'package:conso/ui/composants/carburant_chip.dart';
-import 'package:conso/ui/composants/valeur_unite.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:fueltter/database/database.dart';
+import 'package:fueltter/ui/composants/carburant_chip.dart';
+import 'package:fueltter/ui/composants/valeur_unite.dart';
 import 'package:intl/intl.dart';
 
 class PleinListElement extends StatelessWidget {

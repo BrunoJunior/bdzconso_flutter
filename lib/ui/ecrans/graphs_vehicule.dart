@@ -1,8 +1,8 @@
-import 'package:conso/blocs/bloc_provider.dart';
-import 'package:conso/blocs/pleins_bloc.dart';
-import 'package:conso/ui/composants/graphs/graph_view.dart';
-import 'package:conso/ui/composants/page_vehicule.dart';
 import 'package:flutter/material.dart';
+import 'package:fueltter/blocs/bloc_provider.dart';
+import 'package:fueltter/blocs/pleins_bloc.dart';
+import 'package:fueltter/ui/composants/graphs/graph_view.dart';
+import 'package:fueltter/ui/composants/page_vehicule.dart';
 
 class GraphsVehicule extends StatelessWidget {
   @override

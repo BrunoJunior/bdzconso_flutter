@@ -1,15 +1,15 @@
 import 'dart:io';
 
-import 'package:conso/blocs/bloc_provider.dart';
-import 'package:conso/blocs/vehicules_bloc.dart';
-import 'package:conso/database/database.dart';
-import 'package:conso/services/vehicule_photo_service.dart';
-import 'package:conso/ui/composants/carburant_chip.dart';
-import 'package:conso/ui/composants/vehicules/vehicule_avatar_widget.dart';
-import 'package:conso/ui/composants/vehicules/vehicule_stats_widget.dart';
-import 'package:conso/ui/composants/vehicules/vehicule_title_widget.dart';
-import 'package:conso/ui/router.dart';
 import 'package:flutter/material.dart';
+import 'package:fueltter/blocs/bloc_provider.dart';
+import 'package:fueltter/blocs/vehicules_bloc.dart';
+import 'package:fueltter/database/database.dart';
+import 'package:fueltter/services/vehicule_photo_service.dart';
+import 'package:fueltter/ui/composants/carburant_chip.dart';
+import 'package:fueltter/ui/composants/vehicules/vehicule_avatar_widget.dart';
+import 'package:fueltter/ui/composants/vehicules/vehicule_stats_widget.dart';
+import 'package:fueltter/ui/composants/vehicules/vehicule_title_widget.dart';
+import 'package:fueltter/ui/router.dart';
 
 class VehiculeCard extends StatelessWidget {
   final Vehicule vehicule;

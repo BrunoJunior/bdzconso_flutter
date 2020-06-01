@@ -1,8 +1,8 @@
-import 'package:conso/blocs/bloc.dart';
-import 'package:conso/database/database.dart';
-import 'package:conso/models/graph_data.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:fueltter/blocs/bloc.dart';
+import 'package:fueltter/database/database.dart';
+import 'package:fueltter/models/graph_data.dart';
 import 'package:rxdart/rxdart.dart';
 
 enum GraphDataType {

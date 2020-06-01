@@ -1,6 +1,6 @@
-import 'package:conso/database/database.dart';
-import 'package:conso/database/schemas/pleins.dart';
-import 'package:conso/models/stats.dart';
+import 'package:fueltter/database/database.dart';
+import 'package:fueltter/database/schemas/pleins.dart';
+import 'package:fueltter/models/stats.dart';
 import 'package:intl/intl.dart';
 import 'package:moor/moor.dart';
 

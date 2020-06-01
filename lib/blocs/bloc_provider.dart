@@ -1,6 +1,6 @@
 // Generic BLoC provider
-import 'package:conso/blocs/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:fueltter/blocs/bloc.dart';
 
 typedef BlocBuilder<T> = T Function();
 typedef BlocDisposer<T> = Function(T);

@@ -1,14 +1,14 @@
-import 'package:conso/blocs/bloc_provider.dart';
-import 'package:conso/blocs/stats_bloc.dart';
-import 'package:conso/blocs/vehicules_bloc.dart';
-import 'package:conso/models/stats.dart';
-import 'package:conso/ui/composants/bouncing_fab.dart';
-import 'package:conso/ui/composants/loader.dart';
-import 'package:conso/ui/composants/page_vehicule.dart';
-import 'package:conso/ui/composants/stat_card.dart';
-import 'package:conso/ui/router.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:fueltter/blocs/bloc_provider.dart';
+import 'package:fueltter/blocs/stats_bloc.dart';
+import 'package:fueltter/blocs/vehicules_bloc.dart';
+import 'package:fueltter/models/stats.dart';
+import 'package:fueltter/ui/composants/bouncing_fab.dart';
+import 'package:fueltter/ui/composants/loader.dart';
+import 'package:fueltter/ui/composants/page_vehicule.dart';
+import 'package:fueltter/ui/composants/stat_card.dart';
+import 'package:fueltter/ui/router.dart';
 
 class StatsVehiculeScreen extends StatelessWidget {
   Widget _getGrid(BuildContext context, Stats stats, int nbColonnes) {

@@ -1,8 +1,8 @@
-import 'package:conso/blocs/stats_bloc.dart';
-import 'package:conso/database/database.dart';
-import 'package:conso/models/stats.dart';
-import 'package:conso/ui/composants/valeur_unite.dart';
 import 'package:flutter/material.dart';
+import 'package:fueltter/blocs/stats_bloc.dart';
+import 'package:fueltter/database/database.dart';
+import 'package:fueltter/models/stats.dart';
+import 'package:fueltter/ui/composants/valeur_unite.dart';
 
 class VehiculeStatsWidget extends StatelessWidget {
   final Vehicule vehicule;

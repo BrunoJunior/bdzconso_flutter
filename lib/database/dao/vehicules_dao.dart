@@ -1,5 +1,5 @@
-import 'package:conso/database/database.dart';
-import 'package:conso/database/schemas/vehicules.dart';
+import 'package:fueltter/database/database.dart';
+import 'package:fueltter/database/schemas/vehicules.dart';
 import 'package:moor/moor.dart';
 
 part 'vehicules_dao.g.dart';
