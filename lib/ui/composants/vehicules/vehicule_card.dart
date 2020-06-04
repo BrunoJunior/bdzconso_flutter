@@ -1,32 +1,29 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:fueltter/blocs/bloc_provider.dart';
-import 'package:fueltter/blocs/vehicules_bloc.dart';
 import 'package:fueltter/database/database.dart';
+import 'package:fueltter/models/vehicules_list_data.dart';
 import 'package:fueltter/services/vehicule_photo_service.dart';
 import 'package:fueltter/ui/composants/carburant_chip.dart';
 import 'package:fueltter/ui/composants/vehicules/vehicule_avatar_widget.dart';
 import 'package:fueltter/ui/composants/vehicules/vehicule_stats_widget.dart';
 import 'package:fueltter/ui/composants/vehicules/vehicule_title_widget.dart';
 import 'package:fueltter/ui/router.dart';
+import 'package:provider/provider.dart';
 
 class VehiculeCard extends StatelessWidget {
   final Vehicule vehicule;
 
   VehiculeCard(this.vehicule);
 
-  static VehiculeCard fromVehicule(Vehicule vehicule) => VehiculeCard(vehicule);
-
   _onClickPicture(context) async {
     try {
-      final VehiculesCompanion updatedVehicule = await VehiculePhotoService
-          .instance
-          .takePicture(context, vehicule.toCompanion(true));
-      if (vehicule.photo != updatedVehicule.photo.value) {
+      final path = await VehiculePhotoService.instance.takePicture(context);
+      if (null != path) {
         File photo = VehiculePhotoService.instance.getPhoto(vehicule);
         await photo.exists().then((exists) => exists ? photo.delete() : null);
-        MyDatabase.instance.vehiculesDao.upsert(updatedVehicule);
+        MyDatabase.instance.vehiculesDao
+            .upsert(vehicule.copyWith(photo: path).toCompanion(true));
       }
     } catch (err) {
       print(err);
@@ -35,7 +32,6 @@ class VehiculeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final VehiculesBloc vehiculesBloc = BlocProvider.of<VehiculesBloc>(context);
     return Stack(
       alignment: Alignment.topRight,
       children: [
@@ -57,13 +53,18 @@ class VehiculeCard extends StatelessWidget {
                     bottomLeft: Radius.circular(20.0),
                   ),
                 ),
-                onLongPress: () => Navigator.pushNamed(
-                  context,
-                  EditVehiculeRoute,
-                  arguments: vehicule,
-                ),
+                onLongPress: () {
+                  Provider.of<VehiculeListData>(context, listen: false)
+                      .selectedVehicule = vehicule;
+                  Navigator.pushNamed(
+                    context,
+                    EditVehiculeRoute,
+                    arguments: vehicule,
+                  );
+                },
                 onPressed: () {
-                  vehiculesBloc.selectionner.add(vehicule);
+                  Provider.of<VehiculeListData>(context, listen: false)
+                      .selectedVehicule = vehicule;
                   Navigator.pushNamed(context, StatsVehiculeRoute);
                 },
                 elevation: 5.0,

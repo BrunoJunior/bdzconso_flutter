@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fueltter/blocs/bloc_provider.dart';
-import 'package:fueltter/blocs/vehicules_bloc.dart';
 import 'package:fueltter/database/database.dart';
-import 'package:fueltter/ui/composants/loader.dart';
+import 'package:fueltter/models/vehicules_list_data.dart';
+import 'package:provider/provider.dart';
 
 typedef PageVehiculeBuilder = Widget Function(
     BuildContext context, Vehicule vehicule);
@@ -26,15 +25,11 @@ class PageVehicule extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final VehiculesBloc vehiculesBloc = BlocProvider.of<VehiculesBloc>(context);
-    return StreamBuilder<Vehicule>(
-        stream: vehiculesBloc.vehiculeSelectionne,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Loader();
-          }
+    return Selector<VehiculeListData, Vehicule>(
+        selector: (_, data) => data.selectedVehicule,
+        builder: (context, vehicule, __) {
           final strVehicule =
-              '${snapshot.data.marque} ${snapshot.data.modele} (${snapshot.data.annee})';
+              '${vehicule.marque} ${vehicule.modele} (${vehicule.annee})';
           final _title = (title ?? '').isEmpty
               ? Text(strVehicule)
               : Column(
@@ -46,10 +41,10 @@ class PageVehicule extends StatelessWidget {
                 );
           final _body = null == bodyBuilder
               ? const SizedBox.shrink()
-              : bodyBuilder(context, snapshot.data);
-          final _bottom = (null == bottomSheetBuilder || !snapshot.hasData)
+              : bodyBuilder(context, vehicule);
+          final _bottom = (null == bottomSheetBuilder)
               ? null
-              : bottomSheetBuilder(context, snapshot.data);
+              : bottomSheetBuilder(context, vehicule);
           final _scaffold = Scaffold(
             appBar: AppBar(title: _title),
             body: _body,
@@ -60,7 +55,7 @@ class PageVehicule extends StatelessWidget {
               ? _scaffold
               : scaffoldBuilder(
                   context,
-                  snapshot.data,
+                  vehicule,
                   _scaffold,
                 );
         });

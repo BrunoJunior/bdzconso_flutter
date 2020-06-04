@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 
-enum Carburants { SP95, SP98, SP95_E10, DIESEL, GPL, E85 }
+enum Carburant { SP95, SP98, SP95_E10, DIESEL, GPL, E85 }
 
-const Map<Carburants, String> _mapLibellesCarburants = {
-  Carburants.SP95: 'SP95',
-  Carburants.SP98: 'SP98',
-  Carburants.SP95_E10: 'SP95-E10',
-  Carburants.DIESEL: 'Diesel',
-  Carburants.GPL: 'GPL',
-  Carburants.E85: 'E85',
+const Map<Carburant, String> _mapLibellesCarburants = {
+  Carburant.SP95: 'SP95',
+  Carburant.SP98: 'SP98',
+  Carburant.SP95_E10: 'SP95-E10',
+  Carburant.DIESEL: 'Diesel',
+  Carburant.GPL: 'GPL',
+  Carburant.E85: 'E85',
 };
 
-const Map<Carburants, Color> _mapCouleursCarburants = {
-  Carburants.SP95: Colors.green,
-  Carburants.SP98: Colors.green,
-  Carburants.SP95_E10: Colors.green,
-  Carburants.DIESEL: Colors.yellow,
-  Carburants.GPL: Colors.red,
-  Carburants.E85: Colors.blue,
+const Map<Carburant, Color> _mapCouleursCarburants = {
+  Carburant.SP95: Colors.green,
+  Carburant.SP98: Colors.green,
+  Carburant.SP95_E10: Colors.green,
+  Carburant.DIESEL: Colors.yellow,
+  Carburant.GPL: Colors.red,
+  Carburant.E85: Colors.blue,
 };
 
 class CarburantDisplayer {
-  final Carburants carburant;
+  final Carburant carburant;
 
   const CarburantDisplayer(this.carburant);
 
@@ -34,6 +34,6 @@ class CarburantDisplayer {
   }
 
   Color get color {
-    return Carburants.DIESEL == carburant ? Colors.black54 : Colors.white;
+    return Carburant.DIESEL == carburant ? Colors.black54 : Colors.white;
   }
 }

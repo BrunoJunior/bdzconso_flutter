@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:fueltter/blocs/bloc_provider.dart';
-import 'package:fueltter/blocs/vehicules_bloc.dart';
-import 'package:fueltter/services/camera_service.dart';
-import 'package:fueltter/ui/router.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
+import 'models/vehicules_list_data.dart';
+import 'services/camera_service.dart';
+import 'ui/router.dart';
+
+// FIXME - Ecran prise de photo écrasé en paysage
 // TODO - Import / Export : Google Drive / Local / Dropbox / BdzConso Web
-// TODO - Reformat formulaire véhicule avec pattern BloC
+// TODO - NON utilisation du pattern Provider … Moins tordu à mon avis ^^
 // TODO - Étape ultime : utiliser la caméra pour remplir automatiquement les valeurs d'un plein (ML de Google Firebase ?)
 
 void main() async {
@@ -15,9 +17,9 @@ void main() async {
   Intl.defaultLocale = 'fr_FR';
   await CameraService.initialize();
   runApp(
-    BlocProvider(
+    ChangeNotifierProvider<VehiculeListData>(
+      create: (_) => VehiculeListData(),
       child: MyApp(),
-      blocBuilder: () => VehiculesBloc(),
     ),
   );
 }

@@ -1,31 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:fueltter/database/database.dart';
-import 'package:fueltter/ui/composants/loader.dart';
+import 'package:fueltter/models/vehicules_list_data.dart';
+import 'package:provider/provider.dart';
 
 import 'vehicule_card.dart';
 
 class VehiculesList extends StatelessWidget {
-  final List<Vehicule> vehicules;
-
-  VehiculesList(this.vehicules);
-
-  static Widget fromStreamBuilder(
-    BuildContext context,
-    AsyncSnapshot<List<Vehicule>> snapshot,
-  ) =>
-      snapshot.hasData ? VehiculesList(snapshot.data) : const Loader();
-
   @override
   Widget build(BuildContext context) {
-    if ((vehicules?.length ?? 0) > 0) {
-      return ListView(
-        children: vehicules.map(VehiculeCard.fromVehicule).toList(),
+    return Consumer<VehiculeListData>(builder: (_, modele, __) {
+      if (modele.vehicules.length > 0) {
+        return ListView.builder(
+          itemCount: modele.vehicules.length,
+          itemBuilder: (_, index) => VehiculeCard(modele.vehicules[index]),
+        );
+      }
+      return Container(
+        child: const Center(
+          child: const Text('Ajouter votre 1er véhicule !'),
+        ),
       );
-    }
-    return Container(
-      child: const Center(
-        child: const Text('Ajouter votre 1er véhicule !'),
-      ),
-    );
+    });
   }
 }

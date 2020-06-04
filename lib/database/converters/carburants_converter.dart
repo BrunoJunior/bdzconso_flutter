@@ -3,17 +3,17 @@ import 'dart:convert';
 import 'package:fueltter/enums/carburants.dart';
 import 'package:moor/moor.dart';
 
-const Map<Carburants, String> _mapCarburants = {
-  Carburants.DIESEL: 'diesel',
-  Carburants.E85: 'e85',
-  Carburants.GPL: 'gpl',
-  Carburants.SP95_E10: 'e10',
-  Carburants.SP95: 'sp95',
-  Carburants.SP98: 'sp98',
+const Map<Carburant, String> _mapCarburants = {
+  Carburant.DIESEL: 'diesel',
+  Carburant.E85: 'e85',
+  Carburant.GPL: 'gpl',
+  Carburant.SP95_E10: 'e10',
+  Carburant.SP95: 'sp95',
+  Carburant.SP98: 'sp98',
 };
 
-class CarburantsConverter extends TypeConverter<Carburants, String> {
-  static Map<String, Carburants> _reversedMap = Map.fromEntries(
+class CarburantsConverter extends TypeConverter<Carburant, String> {
+  static Map<String, Carburant> _reversedMap = Map.fromEntries(
     _mapCarburants.entries.map(
       (entry) => MapEntry(entry.value, entry.key),
     ),
@@ -21,7 +21,7 @@ class CarburantsConverter extends TypeConverter<Carburants, String> {
   const CarburantsConverter();
 
   @override
-  Carburants mapToDart(String fromDb) {
+  Carburant mapToDart(String fromDb) {
     if (fromDb == null || !_reversedMap.containsKey(fromDb)) {
       return null;
     }
@@ -29,17 +29,17 @@ class CarburantsConverter extends TypeConverter<Carburants, String> {
   }
 
   @override
-  String mapToSql(Carburants value) {
+  String mapToSql(Carburant value) {
     return value != null ? _mapCarburants[value] : null;
   }
 }
 
-class CarburantsListConverter extends TypeConverter<List<Carburants>, String> {
+class CarburantsListConverter extends TypeConverter<List<Carburant>, String> {
   final CarburantsConverter elementConverter = const CarburantsConverter();
   const CarburantsListConverter();
 
   @override
-  List<Carburants> mapToDart(String fromDb) {
+  List<Carburant> mapToDart(String fromDb) {
     if (fromDb == null) {
       return [];
     }
@@ -50,7 +50,7 @@ class CarburantsListConverter extends TypeConverter<List<Carburants>, String> {
   }
 
   @override
-  String mapToSql(List<Carburants> values) {
+  String mapToSql(List<Carburant> values) {
     return json.encode(values?.map(elementConverter.mapToSql)?.toList() ?? []);
   }
 }

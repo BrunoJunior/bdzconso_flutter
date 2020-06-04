@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:fueltter/blocs/bloc_provider.dart';
 import 'package:fueltter/blocs/stats_bloc.dart';
-import 'package:fueltter/blocs/vehicules_bloc.dart';
+import 'package:fueltter/database/database.dart';
 import 'package:fueltter/models/stats.dart';
+import 'package:fueltter/models/vehicules_list_data.dart';
 import 'package:fueltter/ui/composants/bouncing_fab.dart';
 import 'package:fueltter/ui/composants/loader.dart';
 import 'package:fueltter/ui/composants/page_vehicule.dart';
 import 'package:fueltter/ui/composants/stat_card.dart';
 import 'package:fueltter/ui/router.dart';
+import 'package:provider/provider.dart';
 
 class StatsVehiculeScreen extends StatelessWidget {
   Widget _getGrid(BuildContext context, Stats stats, int nbColonnes) {
@@ -67,35 +68,36 @@ class StatsVehiculeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<Stats>(
-        stream: (BlocProvider.of<VehiculesBloc>(context))
-            .vehiculeSelectionne
-            .asyncExpand((v) => StatsBloc(vehicule: v).outStats),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Loader();
-          }
-          return PageVehicule(
-            title: 'Statistiques générales',
-            bodyBuilder: (context, vehicule) {
-              return OrientationBuilder(
-                builder: (context, orientation) => _getGrid(
-                  context,
-                  snapshot.data,
-                  Orientation.portrait == orientation ? 2 : 3,
+    return Selector<VehiculeListData, Vehicule>(
+      selector: (_, data) => data.selectedVehicule,
+      builder: (_, vehicule, __) => StreamBuilder<Stats>(
+          stream: StatsBloc(vehicule: vehicule).outStats,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Loader();
+            }
+            return PageVehicule(
+              title: 'Statistiques générales',
+              bodyBuilder: (context, vehicule) {
+                return OrientationBuilder(
+                  builder: (context, orientation) => _getGrid(
+                    context,
+                    snapshot.data,
+                    Orientation.portrait == orientation ? 2 : 3,
+                  ),
+                );
+              },
+              fab: BouncingFAB(
+                deactivate: snapshot.hasData && snapshot.data.count > 0,
+                child: FloatingActionButton(
+                  onPressed: () =>
+                      Navigator.pushNamed(context, NouveauPleinRoute),
+                  tooltip: 'Ajouter un plein',
+                  child: Icon(Icons.local_gas_station),
                 ),
-              );
-            },
-            fab: BouncingFAB(
-              deactivate: snapshot.hasData && snapshot.data.count > 0,
-              child: FloatingActionButton(
-                onPressed: () =>
-                    Navigator.pushNamed(context, NouveauPleinRoute),
-                tooltip: 'Ajouter un plein',
-                child: Icon(Icons.local_gas_station),
               ),
-            ),
-          );
-        });
+            );
+          }),
+    );
   }
 }

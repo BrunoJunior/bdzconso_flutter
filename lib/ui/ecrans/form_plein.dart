@@ -4,56 +4,49 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fueltter/blocs/add_plein_form_bloc.dart';
 import 'package:fueltter/blocs/bloc_provider.dart';
-import 'package:fueltter/blocs/vehicules_bloc.dart';
 import 'package:fueltter/database/database.dart';
-import 'package:fueltter/ui/composants/loader.dart';
+import 'package:fueltter/models/vehicules_list_data.dart';
 import 'package:fueltter/ui/composants/pleins/focus_changer.dart';
 import 'package:fueltter/ui/composants/pleins/infos_pompes.dart';
 import 'package:fueltter/ui/composants/pleins/infos_vehicule.dart';
 import 'package:fueltter/ui/composants/pleins/save_form.dart';
 import 'package:fueltter/ui/composants/pleins/valeurs_calculee.dart';
 import 'package:fueltter/ui/composants/pleins/zone_date.dart';
+import 'package:provider/provider.dart';
 
 /// Écran
 class FormPlein extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final VehiculesBloc vehiculesBloc = BlocProvider.of<VehiculesBloc>(context);
-    return StreamBuilder<Vehicule>(
-      stream: vehiculesBloc.vehiculeSelectionne,
-      builder: (context, snapshot) {
-        final vehicule = snapshot.data;
-        if (null == vehicule) {
-          return const Loader();
-        }
-        return BlocProvider<AddPleinFormBloc>(
-          blocBuilder: () => AddPleinFormBloc(vehicule),
-          child: Scaffold(
-            appBar: AppBar(
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${vehicule.marque} ${vehicule.modele} (${vehicule.annee})',
-                    style: const TextStyle(fontSize: 10.0),
-                  ),
-                  const Text('Nouveau plein'),
-                ],
-              ),
-              actions: [const SaveForm()],
+    return Selector<VehiculeListData, Vehicule>(
+      selector: (_, data) => data.selectedVehicule,
+      builder: (_, vehicule, __) => BlocProvider<AddPleinFormBloc>(
+        blocBuilder: () => AddPleinFormBloc(vehicule),
+        child: Scaffold(
+          appBar: AppBar(
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${vehicule.marque} ${vehicule.modele} (${vehicule.annee})',
+                  style: const TextStyle(fontSize: 10.0),
+                ),
+                const Text('Nouveau plein'),
+              ],
             ),
-            body: Padding(
-              padding:
-                  const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 80.0),
-              child: _Form(vehicule),
-            ),
-            bottomSheet: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: const ValeursCalculees(),
-            ),
+            actions: [const SaveForm()],
           ),
-        );
-      },
+          body: Padding(
+            padding:
+                const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 80.0),
+            child: _Form(vehicule),
+          ),
+          bottomSheet: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            child: const ValeursCalculees(),
+          ),
+        ),
+      ),
     );
   }
 }

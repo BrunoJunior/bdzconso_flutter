@@ -2,26 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fueltter/enums/carburants.dart';
 
-const Map<Carburants, String> _mapLibellesCarburants = {
-  Carburants.SP95: 'SP95',
-  Carburants.SP98: 'SP98',
-  Carburants.SP95_E10: 'SP95-E10',
-  Carburants.DIESEL: 'Diesel',
-  Carburants.GPL: 'GPL',
-  Carburants.E85: 'E85',
+const Map<Carburant, String> _mapLibellesCarburants = {
+  Carburant.SP95: 'SP95',
+  Carburant.SP98: 'SP98',
+  Carburant.SP95_E10: 'SP95-E10',
+  Carburant.DIESEL: 'Diesel',
+  Carburant.GPL: 'GPL',
+  Carburant.E85: 'E85',
 };
 
-const Map<Carburants, Color> _mapCouleursCarburants = {
-  Carburants.SP95: Colors.green,
-  Carburants.SP98: Colors.green,
-  Carburants.SP95_E10: Colors.green,
-  Carburants.DIESEL: Colors.yellow,
-  Carburants.GPL: Colors.red,
-  Carburants.E85: Colors.blue,
+const Map<Carburant, Color> _mapCouleursCarburants = {
+  Carburant.SP95: Colors.green,
+  Carburant.SP98: Colors.green,
+  Carburant.SP95_E10: Colors.green,
+  Carburant.DIESEL: Colors.yellow,
+  Carburant.GPL: Colors.red,
+  Carburant.E85: Colors.blue,
 };
 
 class CarburantChip extends StatelessWidget {
-  final Carburants carburant;
+  final Carburant carburant;
   final bool selectionne;
   final VoidCallback onPressed;
   final bool additive;
@@ -37,7 +37,7 @@ class CarburantChip extends StatelessWidget {
   }
 
   Color get _color {
-    return Carburants.DIESEL == carburant ? Colors.black54 : Colors.white;
+    return Carburant.DIESEL == carburant ? Colors.black54 : Colors.white;
   }
 
   @override

@@ -1,159 +1,167 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fueltter/database/database.dart';
 import 'package:fueltter/enums/carburants.dart';
+import 'package:fueltter/enums/form_statuses.dart';
+import 'package:fueltter/forms/vehicule_form.dart';
+import 'package:fueltter/models/vehicules_list_data.dart';
 import 'package:fueltter/services/vehicule_photo_service.dart';
 import 'package:fueltter/ui/composants/carburant_chip.dart';
-import 'package:fueltter/ui/tools/form_fields_tools.dart';
-import 'package:moor/moor.dart' show Value;
+import 'package:fueltter/validators/item_validator.dart';
+import 'package:provider/provider.dart';
 
-class EditVehicule extends StatefulWidget {
-  static final int anneeCourante = DateTime.now().year;
-  final Vehicule vehicule;
-
-  EditVehicule({Key key, this.vehicule}) : super(key: key);
-
-  Iterable<int> annees() sync* {
-    int k = anneeCourante - 50;
-    while (k <= anneeCourante) yield k++;
-  }
+class EditVehicule extends StatelessWidget {
+  const EditVehicule();
 
   @override
-  _EditVehiculeState createState() => _EditVehiculeState();
-}
-
-class _EditVehiculeState extends State<EditVehicule> {
-  final _formKey = GlobalKey<FormState>();
-  VehiculesCompanion vehicule;
-
-  void initState() {
-    vehicule = widget.vehicule?.toCompanion(true) ??
-        VehiculesCompanion(
-          consoAffichee: Value(true),
-          annee: Value(EditVehicule.anneeCourante),
-          carburantsCompatibles: Value([]),
-        );
-    super.initState();
-  }
-
-  _save() async {
-    if (!_formKey.currentState.validate()) {
-      return;
-    }
-    try {
-      final bool hadPhoto = widget.vehicule?.photo?.isNotEmpty ?? false;
-      if (hadPhoto && widget.vehicule?.photo != vehicule.photo.value) {
-        await VehiculePhotoService.instance.getPhoto(widget.vehicule).delete();
-      }
-      await MyDatabase.instance.vehiculesDao.upsert(vehicule);
-      Navigator.pop(context);
-    } catch (err) {
-      print(err);
-    }
-  }
-
-  Widget get _image {
-    File photo = VehiculePhotoService.instance.getCompanionPhoto(vehicule);
-    if (!photo.existsSync()) {
-      return Center(
-        child: Icon(Icons.camera_enhance),
-      );
-    }
-    return SizedBox.expand(
-      child: Image(
-        image: FileImage(photo),
-        fit: BoxFit.cover,
+  Widget build(BuildContext context) {
+    final vehicule = Provider.of<VehiculeListData>(context).selectedVehicule;
+    return ChangeNotifierProvider(
+      create: (_) => VehiculeForm(vehicule: vehicule),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text((null == vehicule?.id)
+              ? "Création véhicule"
+              : "Édition véhicule"),
+          actions: [const _FormAction()],
+        ),
+        body: Orientation.landscape == MediaQuery.of(context).orientation
+            ? const _Landscape()
+            : const _Portrait(),
       ),
     );
   }
+}
 
-  Widget getChip(Carburants carburant) {
-    List<Carburants> compatibles = vehicule.carburantsCompatibles.value;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        CarburantChip(
-          carburant,
-          selectionne: compatibles.contains(carburant),
-          onPressed: () => setState(
-            () {
-              if (!compatibles.remove(carburant)) {
-                vehicule = vehicule.copyWith(
-                    carburantsCompatibles: Value(
-                        [...vehicule.carburantsCompatibles.value, carburant]),
-                    carburantFavoris:
-                        Value(vehicule.carburantFavoris.value ?? carburant));
-              } else if (carburant == vehicule.carburantFavoris.value) {
-                vehicule = vehicule.copyWith(
-                    carburantFavoris: 0 == compatibles.length
-                        ? Value.absent()
-                        : Value(compatibles.first));
+class _FormAction extends StatelessWidget {
+  const _FormAction();
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<VehiculeForm>(
+      builder: (_, form, __) => IconButton(
+        icon: Icon(
+            FormStatus.SUBMITTING == form.status ? Icons.sync : Icons.save),
+        onPressed: FormStatus.VALID == form.status
+            ? () async {
+                await form.onSubmit();
+                Navigator.pop(context);
               }
-            },
-          ),
-        ),
-        Visibility(
-          visible: vehicule.carburantsCompatibles.value?.contains(carburant) ??
-              false,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: InkWell(
-              onTap: () => setState(() => vehicule =
-                  vehicule.copyWith(carburantFavoris: Value(carburant))),
-              child: Icon(
-                carburant == vehicule.carburantFavoris.value
-                    ? Icons.star
-                    : Icons.star_border,
-                color: Colors.yellow,
-              ),
-            ),
-          ),
-        )
+            : null,
+      ),
+    );
+  }
+}
+
+class _Portrait extends StatelessWidget {
+  const _Portrait();
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Expanded(flex: 1, child: const _ZonePhoto()),
+        const Expanded(flex: 2, child: const _Form()),
       ],
     );
   }
+}
 
-  Widget get _zonePhoto {
-    return RawMaterialButton(
-      fillColor: Colors.black12,
-      child: _image,
-      onPressed: () async {
-        final vehiculeWithPhoto =
-            await VehiculePhotoService.instance.takePicture(context, vehicule);
-        setState(() => vehicule = vehiculeWithPhoto);
-      },
+class _Landscape extends StatelessWidget {
+  const _Landscape();
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Expanded(flex: 2, child: const _ZonePhoto()),
+        const Expanded(flex: 3, child: const _Form()),
+      ],
     );
   }
+}
 
-  Widget get _zoneForm {
+class _ZonePhoto extends StatelessWidget {
+  const _ZonePhoto();
+  @override
+  Widget build(BuildContext context) {
+    return RawMaterialButton(
+      fillColor: Colors.black12,
+      child: Selector<VehiculeForm, File>(
+        selector: (_, model) => model.photo,
+        builder: (_, photo, __) {
+          if (!photo.existsSync()) {
+            return const Center(child: const Icon(Icons.camera_enhance));
+          }
+          return SizedBox.expand(
+            child: Image(
+              image: FileImage(photo),
+              fit: BoxFit.cover,
+            ),
+          );
+        },
+      ),
+      onPressed: () async => Provider.of<VehiculeForm>(context, listen: false)
+          .changePathPhoto(await VehiculePhotoService.instance
+              .takePicture(context, autoSave: false)),
+    );
+  }
+}
+
+class _Form extends StatelessWidget {
+  const _Form();
+
+  static final int anneeCourante = DateTime.now().year;
+
+  static Iterable<DropdownMenuItem<int>> annees() sync* {
+    int k = _Form.anneeCourante - 50;
+    while (k <= _Form.anneeCourante)
+      yield DropdownMenuItem<int>(child: Text('$k'), value: k++);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       child: ListView(
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15.0),
-            child: TextFormField(
-              decoration: InputDecoration(
-                labelText: 'Marque *',
-                icon: Icon(Icons.location_city),
-              ),
-              initialValue: vehicule.marque.value ?? '',
-              onChanged: (String value) =>
-                  vehicule = vehicule.copyWith(marque: Value(value)),
-              validator: requiredValidator,
-            ),
+            child: Selector<VehiculeListData, Vehicule>(
+                selector: (_, data) => data.selectedVehicule,
+                builder: (_, vehicule, __) {
+                  final ctrl = TextEditingController(text: vehicule?.marque);
+                  return Consumer<VehiculeForm>(
+                    builder: (_, form, __) => TextField(
+                      decoration: InputDecoration(
+                        labelText: 'Marque *',
+                        icon: Icon(Icons.location_city),
+                        errorText: form.marque.error,
+                      ),
+                      controller: ctrl,
+                      onChanged: form.changeMarque,
+                    ),
+                  );
+                }),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15.0),
-            child: TextFormField(
-              decoration: InputDecoration(
-                labelText: 'Modèle *',
-                icon: Icon(Icons.directions_car),
-              ),
-              initialValue: vehicule.modele.value ?? '',
-              onChanged: (String value) =>
-                  vehicule = vehicule.copyWith(modele: Value(value)),
-              validator: requiredValidator,
+            child: Selector<VehiculeListData, Vehicule>(
+              selector: (_, data) => data.selectedVehicule,
+              builder: (_, vehicule, __) {
+                final ctrl = TextEditingController(text: vehicule?.modele);
+                return Consumer<VehiculeForm>(
+                  builder: (_, form, __) => TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Modèle *',
+                      icon: const Icon(Icons.directions_car),
+                      errorText: form.modele.error,
+                    ),
+                    controller: ctrl,
+                    onChanged: form.changeModele,
+                  ),
+                );
+              },
             ),
           ),
           Padding(
@@ -163,61 +171,54 @@ class _EditVehiculeState extends State<EditVehicule> {
               children: [
                 Row(
                   children: [
-                    Padding(
+                    const Padding(
                       padding: const EdgeInsets.only(right: 32.0),
-                      child: Icon(Icons.calendar_today),
+                      child: const Icon(Icons.calendar_today),
                     ),
-                    Text(
+                    const Text(
                       'Année',
-                      style: TextStyle(fontSize: 16.0),
+                      style: const TextStyle(fontSize: 16.0),
                     ),
                   ],
                 ),
-                DropdownButton<int>(
-                  items: widget
-                      .annees()
-                      .map(
-                        (value) => DropdownMenuItem<int>(
-                          value: value,
-                          child: Text(
-                            value.toString(),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                  value: vehicule.annee.value,
-                  onChanged: (value) => setState(
-                    () => vehicule = vehicule.copyWith(annee: Value(value)),
+                Consumer<VehiculeForm>(
+                  builder: (_, form, __) => DropdownButton<int>(
+                    items: _Form.annees().toList(),
+                    value: form.annee.value,
+                    onChanged: form.changeAnnee,
                   ),
-                )
+                ),
               ],
             ),
           ),
-          SwitchListTile(
-            title: Text('Consommation affichée'),
-            value: vehicule.consoAffichee.value,
-            onChanged: (bool value) => setState(() =>
-                vehicule = vehicule.copyWith(consoAffichee: Value(value))),
-            secondary: const Icon(Icons.equalizer),
+          Consumer<VehiculeForm>(
+            builder: (_, form, __) => SwitchListTile(
+              title: const Text('Consommation affichée'),
+              value: form.consoAffichee,
+              onChanged: form.changeConsoAffichee,
+              secondary: const Icon(Icons.equalizer),
+            ),
           ),
           Column(
             children: [
               Row(
                 children: [
-                  Padding(
+                  const Padding(
                     padding: const EdgeInsets.only(left: 16.0, right: 32.0),
-                    child: Icon(Icons.local_gas_station),
+                    child: const Icon(Icons.local_gas_station),
                   ),
-                  Text(
+                  const Text(
                     "Carburants compatibles",
-                    style: TextStyle(fontSize: 16.0),
+                    style: const TextStyle(fontSize: 16.0),
                   ),
                 ],
               ),
               Wrap(
                 spacing: 8.0,
                 alignment: WrapAlignment.center,
-                children: Carburants.values.map(getChip).toList(),
+                children: Carburant.values
+                    .map((carburant) => _CarburantsChip(carburant))
+                    .toList(),
               ),
             ],
           ),
@@ -225,47 +226,48 @@ class _EditVehiculeState extends State<EditVehicule> {
       ),
     );
   }
+}
 
-  Widget get _portraitLayout {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(flex: 1, child: _zonePhoto),
-        Expanded(flex: 2, child: _zoneForm),
-      ],
-    );
-  }
-
-  Widget get _landscapeLayout {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(flex: 2, child: _zonePhoto),
-        Expanded(flex: 3, child: _zoneForm),
-      ],
-    );
-  }
-
+class _CarburantsChip extends StatelessWidget {
+  final Carburant carburant;
+  _CarburantsChip(this.carburant);
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(null == vehicule.id.value
-            ? "Création véhicule"
-            : "Édition véhicule"),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.save),
-            onPressed: _save,
-          )
-        ],
-      ),
-      body: Form(
-        key: _formKey,
-        child: Orientation.landscape == MediaQuery.of(context).orientation
-            ? _landscapeLayout
-            : _portraitLayout,
-      ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Selector<VehiculeForm, ValidatedItem<UnmodifiableListView<Carburant>>>(
+            selector: (_, form) => form.carburantsCompatibles,
+            builder: (_, validated, __) {
+              final selectionne =
+                  validated.hasValue() && validated.value.contains(carburant);
+              return CarburantChip(
+                carburant,
+                selectionne: selectionne,
+                onPressed: () =>
+                    Provider.of<VehiculeForm>(context, listen: false)
+                        .toggleCarburantCompatible(carburant),
+              );
+            }),
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Consumer<VehiculeForm>(builder: (context, form, _) {
+            return Visibility(
+              visible: form.carburantsCompatibles.hasValue() &&
+                  form.carburantsCompatibles.value.contains(carburant),
+              child: InkWell(
+                onTap: () => form.changeCarburantFavoris(carburant),
+                child: Icon(
+                  carburant == form.carburantFavoris.value
+                      ? Icons.star
+                      : Icons.star_border,
+                  color: Colors.yellow,
+                ),
+              ),
+            );
+          }),
+        )
+      ],
     );
   }
 }

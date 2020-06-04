@@ -26,7 +26,7 @@ class InfosPompe extends StatelessWidget with DoubleTransformer, FocusChanger {
       title: 'Infos pompe',
       titleIcon: const Icon(Icons.local_gas_station),
       children: [
-        StreamBuilder<Carburants>(
+        StreamBuilder<Carburant>(
           stream: formBloc.carburant,
           builder: (context, snapshot) {
             return Wrap(

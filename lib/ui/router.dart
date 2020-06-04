@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fueltter/services/camera_service.dart';
-import 'package:fueltter/ui/ecrans/edit_vehicule.dart';
-import 'package:fueltter/ui/ecrans/form_plein.dart';
-import 'package:fueltter/ui/ecrans/graphs_vehicule.dart';
-import 'package:fueltter/ui/ecrans/home.dart';
-import 'package:fueltter/ui/ecrans/liste_pleins.dart';
-import 'package:fueltter/ui/ecrans/stats_vehicule.dart';
-import 'package:fueltter/ui/ecrans/take_picture.dart';
+
+import 'ecrans/edit_vehicule.dart';
+import 'ecrans/form_plein.dart';
+import 'ecrans/graphs_vehicule.dart';
+import 'ecrans/home.dart';
+import 'ecrans/liste_pleins.dart';
+import 'ecrans/stats_vehicule.dart';
+import 'ecrans/take_picture.dart';
 
 const String HomeRoute = '/';
 const String EditVehiculeRoute = 'edit-vehicule';
@@ -19,11 +20,9 @@ const String GraphsVehiculeRoute = 'graphs-vehicule';
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
     case HomeRoute:
-      return MaterialPageRoute(builder: (context) => Home('Mes véhicules'));
+      return MaterialPageRoute(builder: (context) => const Home());
     case EditVehiculeRoute:
-      var vehicule = settings.arguments;
-      return MaterialPageRoute(
-          builder: (context) => EditVehicule(vehicule: vehicule));
+      return MaterialPageRoute(builder: (context) => EditVehicule());
     case TakePictureRoute:
       return MaterialPageRoute(
           builder: (context) =>
@@ -37,6 +36,6 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case GraphsVehiculeRoute:
       return MaterialPageRoute(builder: (context) => GraphsVehicule());
     default:
-      return MaterialPageRoute(builder: (context) => Home('Mes véhicules'));
+      return MaterialPageRoute(builder: (context) => const Home());
   }
 }

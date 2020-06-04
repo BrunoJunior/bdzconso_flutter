@@ -12,8 +12,8 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
   final String marque;
   final String modele;
   final int annee;
-  final List<Carburants> carburantsCompatibles;
-  final Carburants carburantFavoris;
+  final List<Carburant> carburantsCompatibles;
+  final Carburant carburantFavoris;
   final bool consoAffichee;
   final String photo;
   Vehicule(
@@ -116,9 +116,9 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
       modele: serializer.fromJson<String>(json['modele']),
       annee: serializer.fromJson<int>(json['annee']),
       carburantsCompatibles:
-          serializer.fromJson<List<Carburants>>(json['carburantsCompatibles']),
+          serializer.fromJson<List<Carburant>>(json['carburantsCompatibles']),
       carburantFavoris:
-          serializer.fromJson<Carburants>(json['carburantFavoris']),
+          serializer.fromJson<Carburant>(json['carburantFavoris']),
       consoAffichee: serializer.fromJson<bool>(json['consoAffichee']),
       photo: serializer.fromJson<String>(json['photo']),
     );
@@ -132,8 +132,8 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
       'modele': serializer.toJson<String>(modele),
       'annee': serializer.toJson<int>(annee),
       'carburantsCompatibles':
-          serializer.toJson<List<Carburants>>(carburantsCompatibles),
-      'carburantFavoris': serializer.toJson<Carburants>(carburantFavoris),
+          serializer.toJson<List<Carburant>>(carburantsCompatibles),
+      'carburantFavoris': serializer.toJson<Carburant>(carburantFavoris),
       'consoAffichee': serializer.toJson<bool>(consoAffichee),
       'photo': serializer.toJson<String>(photo),
     };
@@ -144,8 +144,8 @@ class Vehicule extends DataClass implements Insertable<Vehicule> {
           String marque,
           String modele,
           int annee,
-          List<Carburants> carburantsCompatibles,
-          Carburants carburantFavoris,
+          List<Carburant> carburantsCompatibles,
+          Carburant carburantFavoris,
           bool consoAffichee,
           String photo}) =>
       Vehicule(
@@ -206,8 +206,8 @@ class VehiculesCompanion extends UpdateCompanion<Vehicule> {
   final Value<String> marque;
   final Value<String> modele;
   final Value<int> annee;
-  final Value<List<Carburants>> carburantsCompatibles;
-  final Value<Carburants> carburantFavoris;
+  final Value<List<Carburant>> carburantsCompatibles;
+  final Value<Carburant> carburantFavoris;
   final Value<bool> consoAffichee;
   final Value<String> photo;
   const VehiculesCompanion({
@@ -259,8 +259,8 @@ class VehiculesCompanion extends UpdateCompanion<Vehicule> {
       Value<String> marque,
       Value<String> modele,
       Value<int> annee,
-      Value<List<Carburants>> carburantsCompatibles,
-      Value<Carburants> carburantFavoris,
+      Value<List<Carburant>> carburantsCompatibles,
+      Value<Carburant> carburantFavoris,
       Value<bool> consoAffichee,
       Value<String> photo}) {
     return VehiculesCompanion(
@@ -482,9 +482,9 @@ class $VehiculesTable extends Vehicules
     return $VehiculesTable(_db, alias);
   }
 
-  static TypeConverter<List<Carburants>, String> $converter0 =
+  static TypeConverter<List<Carburant>, String> $converter0 =
       const CarburantsListConverter();
-  static TypeConverter<Carburants, String> $converter1 =
+  static TypeConverter<Carburant, String> $converter1 =
       const CarburantsConverter();
 }
 
@@ -492,7 +492,7 @@ class Plein extends DataClass implements Insertable<Plein> {
   final int id;
   final int idVehicule;
   final DateTime date;
-  final Carburants carburant;
+  final Carburant carburant;
   final double volume;
   final double montant;
   final double distance;
@@ -658,7 +658,7 @@ class Plein extends DataClass implements Insertable<Plein> {
       id: serializer.fromJson<int>(json['id']),
       idVehicule: serializer.fromJson<int>(json['idVehicule']),
       date: serializer.fromJson<DateTime>(json['date']),
-      carburant: serializer.fromJson<Carburants>(json['carburant']),
+      carburant: serializer.fromJson<Carburant>(json['carburant']),
       volume: serializer.fromJson<double>(json['volume']),
       montant: serializer.fromJson<double>(json['montant']),
       distance: serializer.fromJson<double>(json['distance']),
@@ -678,7 +678,7 @@ class Plein extends DataClass implements Insertable<Plein> {
       'id': serializer.toJson<int>(id),
       'idVehicule': serializer.toJson<int>(idVehicule),
       'date': serializer.toJson<DateTime>(date),
-      'carburant': serializer.toJson<Carburants>(carburant),
+      'carburant': serializer.toJson<Carburant>(carburant),
       'volume': serializer.toJson<double>(volume),
       'montant': serializer.toJson<double>(montant),
       'distance': serializer.toJson<double>(distance),
@@ -696,7 +696,7 @@ class Plein extends DataClass implements Insertable<Plein> {
           {int id,
           int idVehicule,
           DateTime date,
-          Carburants carburant,
+          Carburant carburant,
           double volume,
           double montant,
           double distance,
@@ -797,7 +797,7 @@ class PleinsCompanion extends UpdateCompanion<Plein> {
   final Value<int> id;
   final Value<int> idVehicule;
   final Value<DateTime> date;
-  final Value<Carburants> carburant;
+  final Value<Carburant> carburant;
   final Value<double> volume;
   final Value<double> montant;
   final Value<double> distance;
@@ -828,7 +828,7 @@ class PleinsCompanion extends UpdateCompanion<Plein> {
     this.id = const Value.absent(),
     @required int idVehicule,
     @required DateTime date,
-    @required Carburants carburant,
+    @required Carburant carburant,
     this.volume = const Value.absent(),
     this.montant = const Value.absent(),
     this.distance = const Value.absent(),
@@ -880,7 +880,7 @@ class PleinsCompanion extends UpdateCompanion<Plein> {
       {Value<int> id,
       Value<int> idVehicule,
       Value<DateTime> date,
-      Value<Carburants> carburant,
+      Value<Carburant> carburant,
       Value<double> volume,
       Value<double> montant,
       Value<double> distance,
@@ -1193,7 +1193,7 @@ class $PleinsTable extends Pleins with TableInfo<$PleinsTable, Plein> {
     return $PleinsTable(_db, alias);
   }
 
-  static TypeConverter<Carburants, String> $converter0 =
+  static TypeConverter<Carburant, String> $converter0 =
       const CarburantsConverter();
   static TypeConverter<double, int> $converter1 = NumericConverter.cents;
   static TypeConverter<double, int> $converter2 = NumericConverter.cents;

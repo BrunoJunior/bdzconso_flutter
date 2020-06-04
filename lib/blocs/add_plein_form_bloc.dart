@@ -98,8 +98,8 @@ class AddPleinFormBloc
   final BehaviorSubject<String> _dateController = BehaviorSubject<String>();
   final BehaviorSubject<String> _distanceController = BehaviorSubject<String>();
   final BehaviorSubject<String> _consoController = BehaviorSubject<String>();
-  final BehaviorSubject<Carburants> _carburantController =
-      BehaviorSubject<Carburants>();
+  final BehaviorSubject<Carburant> _carburantController =
+      BehaviorSubject<Carburant>();
   final BehaviorSubject<bool> _additiveController = BehaviorSubject<bool>();
   final BehaviorSubject<String> _prixController = BehaviorSubject<String>();
   final BehaviorSubject<String> _volumeController = BehaviorSubject<String>();
@@ -111,7 +111,7 @@ class AddPleinFormBloc
   Function(String) get onDateChanged => _dateController.add;
   Function(String) get onDistanceChanged => _distanceController.add;
   Function(String) get onConsoAfficheeChanged => _consoController.add;
-  Function(Carburants) get onCarburantChanged => _carburantController.add;
+  Function(Carburant) get onCarburantChanged => _carburantController.add;
   Function(bool) get onAdditiveChanged => _additiveController.add;
   Function(String) get onPrixChanged => _prixController.add;
   Function(String) get onVolumeChanged => _volumeController.add;
@@ -146,7 +146,7 @@ class AddPleinFormBloc
       .transform(validateRequired)
       .transform(validateDouble)
       .transform(stringToDouble);
-  Stream<Carburants> get carburant => _carburantController.stream;
+  Stream<Carburant> get carburant => _carburantController.stream;
   Stream<bool> get additive => _additiveController.stream;
   Stream<bool> get partiel => _partielController.stream;
   Stream<double> get consoCalculee => MergeStream([volume, distance, partiel])

@@ -5,7 +5,6 @@ import 'package:file_utils/file_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fueltter/database/database.dart';
 import 'package:fueltter/ui/router.dart';
-import 'package:moor/moor.dart' show Value;
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -35,14 +34,18 @@ class VehiculePhotoService {
     return File(vehicule.photo.value ?? '__');
   }
 
-  Future<VehiculesCompanion> takePicture(
-      BuildContext context, VehiculesCompanion vehicule) async {
+  Future<String> takePicture(BuildContext context,
+      {bool autoSave = true}) async {
     final tempPath = await Navigator.pushNamed(context, TakePictureRoute);
+    return autoSave ? await movePhotoInFinalPath(tempPath) : tempPath;
+  }
+
+  Future<String> movePhotoInFinalPath(String tempPath) async {
     final String finalPath = await getImagePath();
     if (null != tempPath && FileUtils.rename(tempPath, finalPath)) {
-      return vehicule.copyWith(photo: Value(finalPath));
+      return finalPath;
     } else if (null == tempPath) {
-      return vehicule;
+      return null;
     } else {
       throw new Exception('Erreur lors de la sauvegarde de la photo');
     }
