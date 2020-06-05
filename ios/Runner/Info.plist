@@ -43,5 +43,7 @@
 	<false/>
 	<key>NSCameraUsageDescription</key>
     <string>Camera is used to take picture or pre-fill data.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>To take picture of your vehicles</string>
 </dict>
 </plist>

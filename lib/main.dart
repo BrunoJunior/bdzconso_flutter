@@ -7,9 +7,9 @@ import 'models/vehicules_list_data.dart';
 import 'services/camera_service.dart';
 import 'ui/router.dart';
 
-// FIXME - Ecran prise de photo écrasé en paysage
+// FIXME - Ecran prise de photo écrasé en paysage - Use image_picker
 // TODO - Import / Export : Google Drive / Local / Dropbox / BdzConso Web
-// TODO - Supprimer BloCs
+// TODO - BloCs => Provider
 // TODO - Étape ultime : utiliser la caméra pour remplir automatiquement les valeurs d'un plein (ML de Google Firebase ?)
 
 void main() async {
