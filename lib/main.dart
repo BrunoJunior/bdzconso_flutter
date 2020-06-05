@@ -9,7 +9,7 @@ import 'ui/router.dart';
 
 // FIXME - Ecran prise de photo écrasé en paysage
 // TODO - Import / Export : Google Drive / Local / Dropbox / BdzConso Web
-// TODO - NON utilisation du pattern Provider … Moins tordu à mon avis ^^
+// TODO - Supprimer BloCs
 // TODO - Étape ultime : utiliser la caméra pour remplir automatiquement les valeurs d'un plein (ML de Google Firebase ?)
 
 void main() async {

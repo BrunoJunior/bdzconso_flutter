@@ -3,36 +3,36 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fueltter/database/database.dart';
-import 'package:fueltter/enums/carburants.dart';
-import 'package:fueltter/enums/form_statuses.dart';
+import 'package:fueltter/forms/form.dart';
+import 'package:fueltter/forms/form_element.dart';
 import 'package:fueltter/forms/vehicule_form.dart';
+import 'package:fueltter/models/carburant.dart';
 import 'package:fueltter/models/vehicules_list_data.dart';
 import 'package:fueltter/services/vehicule_photo_service.dart';
 import 'package:fueltter/ui/composants/carburant_chip.dart';
-import 'package:fueltter/validators/item_validator.dart';
 import 'package:provider/provider.dart';
 
 class EditVehicule extends StatelessWidget {
   const EditVehicule();
 
   @override
-  Widget build(BuildContext context) {
-    final vehicule = Provider.of<VehiculeListData>(context).selectedVehicule;
-    return ChangeNotifierProvider(
-      create: (_) => VehiculeForm(vehicule: vehicule),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text((null == vehicule?.id)
-              ? "Création véhicule"
-              : "Édition véhicule"),
-          actions: [const _FormAction()],
+  Widget build(BuildContext context) => Selector<VehiculeListData, Vehicule>(
+        selector: (_, data) => data.selectedVehicule,
+        builder: (context, vehicule, _) => ChangeNotifierProvider(
+          create: (_) => VehiculeForm(vehicule: vehicule),
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text((null == vehicule?.id)
+                  ? "Création véhicule"
+                  : "Édition véhicule"),
+              actions: [const _FormAction()],
+            ),
+            body: Orientation.landscape == MediaQuery.of(context).orientation
+                ? const _Landscape()
+                : const _Portrait(),
+          ),
         ),
-        body: Orientation.landscape == MediaQuery.of(context).orientation
-            ? const _Landscape()
-            : const _Portrait(),
-      ),
-    );
-  }
+      );
 }
 
 class _FormAction extends StatelessWidget {
@@ -46,6 +46,8 @@ class _FormAction extends StatelessWidget {
         onPressed: FormStatus.VALID == form.status
             ? () async {
                 await form.onSubmit();
+                Provider.of<VehiculeListData>(context, listen: false)
+                    .selectedVehicule = null;
                 Navigator.pop(context);
               }
             : null,
@@ -89,7 +91,7 @@ class _ZonePhoto extends StatelessWidget {
     return RawMaterialButton(
       fillColor: Colors.black12,
       child: Selector<VehiculeForm, File>(
-        selector: (_, model) => model.photo,
+        selector: (_, form) => form.photo,
         builder: (_, photo, __) {
           if (!photo.existsSync()) {
             return const Center(child: const Icon(Icons.camera_enhance));
@@ -103,7 +105,8 @@ class _ZonePhoto extends StatelessWidget {
         },
       ),
       onPressed: () async => Provider.of<VehiculeForm>(context, listen: false)
-          .changePathPhoto(await VehiculePhotoService.instance
+          .photoPath
+          .change(await VehiculePhotoService.instance
               .takePicture(context, autoSave: false)),
     );
   }
@@ -131,15 +134,17 @@ class _Form extends StatelessWidget {
                 selector: (_, data) => data.selectedVehicule,
                 builder: (_, vehicule, __) {
                   final ctrl = TextEditingController(text: vehicule?.marque);
-                  return Consumer<VehiculeForm>(
-                    builder: (_, form, __) => TextField(
+                  return Selector<VehiculeForm,
+                      FormElement<VehiculeField, String>>(
+                    selector: (_, form) => form.marque,
+                    builder: (_, marque, __) => TextField(
                       decoration: InputDecoration(
                         labelText: 'Marque *',
                         icon: Icon(Icons.location_city),
-                        errorText: form.marque.error,
+                        errorText: marque.error,
                       ),
                       controller: ctrl,
-                      onChanged: form.changeMarque,
+                      onChanged: marque.change,
                     ),
                   );
                 }),
@@ -150,15 +155,17 @@ class _Form extends StatelessWidget {
               selector: (_, data) => data.selectedVehicule,
               builder: (_, vehicule, __) {
                 final ctrl = TextEditingController(text: vehicule?.modele);
-                return Consumer<VehiculeForm>(
-                  builder: (_, form, __) => TextField(
+                return Selector<VehiculeForm,
+                    FormElement<VehiculeField, String>>(
+                  selector: (_, form) => form.modele,
+                  builder: (_, modele, __) => TextField(
                     decoration: InputDecoration(
                       labelText: 'Modèle *',
                       icon: const Icon(Icons.directions_car),
-                      errorText: form.modele.error,
+                      errorText: modele.error,
                     ),
                     controller: ctrl,
-                    onChanged: form.changeModele,
+                    onChanged: modele.change,
                   ),
                 );
               },
@@ -181,21 +188,23 @@ class _Form extends StatelessWidget {
                     ),
                   ],
                 ),
-                Consumer<VehiculeForm>(
-                  builder: (_, form, __) => DropdownButton<int>(
+                Selector<VehiculeForm, FormElement<VehiculeField, int>>(
+                  selector: (_, form) => form.annee,
+                  builder: (_, annee, __) => DropdownButton<int>(
                     items: _Form.annees().toList(),
-                    value: form.annee.value,
-                    onChanged: form.changeAnnee,
+                    value: annee.value,
+                    onChanged: annee.change,
                   ),
                 ),
               ],
             ),
           ),
-          Consumer<VehiculeForm>(
-            builder: (_, form, __) => SwitchListTile(
+          Selector<VehiculeForm, FormElement<VehiculeField, bool>>(
+            selector: (_, form) => form.consoAffichee,
+            builder: (_, consoAffichee, __) => SwitchListTile(
               title: const Text('Consommation affichée'),
-              value: form.consoAffichee,
-              onChanged: form.changeConsoAffichee,
+              value: consoAffichee.value,
+              onChanged: consoAffichee.change,
               secondary: const Icon(Icons.equalizer),
             ),
           ),
@@ -236,11 +245,10 @@ class _CarburantsChip extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Selector<VehiculeForm, ValidatedItem<UnmodifiableListView<Carburant>>>(
+        Selector<VehiculeForm, UnmodifiableListView<Carburant>>(
             selector: (_, form) => form.carburantsCompatibles,
-            builder: (_, validated, __) {
-              final selectionne =
-                  validated.hasValue() && validated.value.contains(carburant);
+            builder: (_, carburants, __) {
+              final selectionne = carburants.contains(carburant);
               return CarburantChip(
                 carburant,
                 selectionne: selectionne,
@@ -251,21 +259,28 @@ class _CarburantsChip extends StatelessWidget {
             }),
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
-          child: Consumer<VehiculeForm>(builder: (context, form, _) {
-            return Visibility(
-              visible: form.carburantsCompatibles.hasValue() &&
-                  form.carburantsCompatibles.value.contains(carburant),
-              child: InkWell(
-                onTap: () => form.changeCarburantFavoris(carburant),
-                child: Icon(
-                  carburant == form.carburantFavoris.value
-                      ? Icons.star
-                      : Icons.star_border,
-                  color: Colors.yellow,
+          child: Selector<VehiculeForm, bool>(
+            selector: (_, form) =>
+                form.carburantsCompatibles.contains(carburant),
+            builder: (context, visible, _) {
+              return Visibility(
+                visible: visible,
+                child: Selector<VehiculeForm,
+                    FormElement<VehiculeField, Carburant>>(
+                  selector: (_, form) => form.carburantFavoris,
+                  builder: (_, favoris, __) => InkWell(
+                    onTap: () => favoris.change(carburant),
+                    child: Icon(
+                      carburant == favoris.value
+                          ? Icons.star
+                          : Icons.star_border,
+                      color: Colors.yellow,
+                    ),
+                  ),
                 ),
-              ),
-            );
-          }),
+              );
+            },
+          ),
         )
       ],
     );

@@ -6,7 +6,7 @@ import 'package:fueltter/database/dao/pleins_dao.dart';
 import 'package:fueltter/database/dao/vehicules_dao.dart';
 import 'package:fueltter/database/schemas/pleins.dart';
 import 'package:fueltter/database/schemas/vehicules.dart';
-import 'package:fueltter/enums/carburants.dart';
+import 'package:fueltter/models/carburant.dart';
 import 'package:moor/moor.dart';
 import 'package:moor_ffi/moor_ffi.dart';
 import 'package:path/path.dart' as p;

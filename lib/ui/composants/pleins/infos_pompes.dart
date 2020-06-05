@@ -1,108 +1,99 @@
 import 'package:flutter/material.dart';
-import 'package:fueltter/blocs/add_plein_form_bloc.dart';
-import 'package:fueltter/blocs/bloc_provider.dart';
 import 'package:fueltter/database/database.dart';
-import 'package:fueltter/enums/carburants.dart';
-import 'package:fueltter/transformers/double_transformer.dart';
+import 'package:fueltter/forms/form_element.dart';
+import 'package:fueltter/forms/plein_form.dart';
+import 'package:fueltter/models/carburant.dart';
 import 'package:fueltter/ui/composants/carburant_chip.dart';
 import 'package:fueltter/ui/composants/form_card.dart';
 import 'package:fueltter/ui/composants/pleins/focus_changer.dart';
+import 'package:provider/provider.dart';
 
-class InfosPompe extends StatelessWidget with DoubleTransformer, FocusChanger {
-  final Vehicule vehicule;
+class InfosPompe extends StatelessWidget with FocusChanger {
   final FocusNode firstFocusNode;
   final ValueChanged<String> onSubmit;
   final bool autofocus;
   final FocusNode _prixFocus = FocusNode();
   final FocusNode _volumeFocus = FocusNode();
 
-  InfosPompe(this.vehicule,
-      {this.firstFocusNode, this.onSubmit, this.autofocus = false});
+  InfosPompe({this.firstFocusNode, this.onSubmit, this.autofocus = false});
 
   @override
   Widget build(BuildContext context) {
-    final formBloc = BlocProvider.of<AddPleinFormBloc>(context);
     return FormCard(
       title: 'Infos pompe',
       titleIcon: const Icon(Icons.local_gas_station),
       children: [
-        StreamBuilder<Carburant>(
-          stream: formBloc.carburant,
-          builder: (context, snapshot) {
-            return Wrap(
+        Selector<PleinForm, Vehicule>(
+          selector: (_, form) => form.vehicule,
+          builder: (_, vehicule, __) =>
+              Selector<PleinForm, FormElement<PleinField, Carburant>>(
+            selector: (_, form) => form.carburant,
+            builder: (_, selected, __) => Wrap(
               spacing: 8.0,
               alignment: WrapAlignment.center,
               children: vehicule.carburantsCompatibles
                   .map(
                     (carburant) => CarburantChip(
                       carburant,
-                      selectionne: carburant == snapshot.data,
-                      onPressed: () => formBloc.onCarburantChanged(carburant),
+                      selectionne: carburant == selected.value,
+                      onPressed: () => selected.change(carburant),
                     ),
                   )
                   .toList(),
-            );
-          },
+            ),
+          ),
         ),
-        StreamBuilder<bool>(
-          stream: formBloc.additive,
-          builder: (context, snapshot) {
-            return SwitchListTile(
-              title: const Text('Additivé'),
-              value: snapshot.data ?? false,
-              onChanged: formBloc.onAdditiveChanged,
-            );
-          },
+        Selector<PleinForm, FormElement<PleinField, bool>>(
+          selector: (_, form) => form.additif,
+          builder: (_, additif, __) => SwitchListTile(
+            title: const Text('Additivé'),
+            value: additif.value ?? false,
+            onChanged: additif.change,
+          ),
         ),
-        StreamBuilder<double>(
-          stream: formBloc.prix,
-          builder: (context, snapshot) {
-            return TextField(
-              focusNode: firstFocusNode ?? _prixFocus,
-              autofocus: autofocus,
-              textInputAction: TextInputAction.next,
-              onSubmitted: (value) => fieldFocusChange(
-                  context, firstFocusNode ?? _prixFocus, _volumeFocus),
-              decoration: InputDecoration(
-                labelText: 'Prix *',
-                suffix: const Text('€'),
-                errorText: snapshot.error,
-              ),
-              keyboardType: TextInputType.number,
-              onChanged: formBloc.onPrixChanged,
-            );
-          },
+        Selector<PleinForm, FormElement<PleinField, String>>(
+          selector: (_, form) => form.montant,
+          builder: (context, prix, __) => TextField(
+            focusNode: firstFocusNode ?? _prixFocus,
+            autofocus: autofocus,
+            textInputAction: TextInputAction.next,
+            onSubmitted: (value) => fieldFocusChange(
+                context, firstFocusNode ?? _prixFocus, _volumeFocus),
+            decoration: InputDecoration(
+              labelText: 'Prix *',
+              suffix: const Text('€'),
+              errorText: prix.error,
+            ),
+            keyboardType: TextInputType.number,
+            onChanged: prix.change,
+          ),
         ),
-        StreamBuilder<double>(
-          stream: formBloc.volume,
-          builder: (context, snapshot) {
-            return TextField(
-              focusNode: _volumeFocus,
-              onSubmitted: (value) {
-                _volumeFocus.unfocus();
-                if (null != onSubmit) {
-                  onSubmit(value);
-                }
-              },
-              decoration: InputDecoration(
-                labelText: 'Volume *',
-                suffix: const Text('L'),
-                errorText: snapshot.error,
-              ),
-              keyboardType: TextInputType.number,
-              onChanged: formBloc.onVolumeChanged,
-            );
-          },
+        Selector<PleinForm, FormElement<PleinField, String>>(
+          selector: (_, form) => form.volume,
+          builder: (context, volume, __) => TextField(
+            focusNode: _volumeFocus,
+            onSubmitted: (value) {
+              _volumeFocus.unfocus();
+              if (null != onSubmit) {
+                onSubmit(value);
+              }
+            },
+            decoration: InputDecoration(
+              labelText: 'Volume *',
+              suffix: const Text('L'),
+              errorText: volume.error,
+            ),
+            keyboardType: TextInputType.number,
+            onChanged: volume.change,
+          ),
         ),
-        StreamBuilder<bool>(
-          stream: formBloc.partiel,
-          builder: (context, snapshot) {
-            return SwitchListTile(
-              title: const Text("Je n'ai pas fait le plein"),
-              value: snapshot.data ?? false,
-              onChanged: formBloc.onPartielChanged,
-            );
-          },
+        Selector<PleinForm, FormElement<PleinField, bool>>(
+          selector: (_, form) => form.partiel,
+          builder: (_, partiel, __) => SwitchListTile(
+            title: const Text("Je n'ai pas fait le plein"),
+            value: partiel.value ?? false,
+            onChanged: partiel.change,
+          ),
         ),
       ],
     );

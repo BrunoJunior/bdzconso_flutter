@@ -31,7 +31,11 @@ class Home extends StatelessWidget {
         return BouncingFAB(
           deactivate: model.vehicules.length > 0,
           child: FloatingActionButton(
-            onPressed: () => Navigator.pushNamed(context, EditVehiculeRoute),
+            onPressed: () {
+              Provider.of<VehiculeListData>(context, listen: false)
+                  .selectedVehicule = null;
+              Navigator.pushNamed(context, EditVehiculeRoute);
+            },
             tooltip: 'Ajouter un véhicule',
             child: const Icon(Icons.add),
           ),

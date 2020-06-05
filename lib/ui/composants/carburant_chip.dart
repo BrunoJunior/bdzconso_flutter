@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:fueltter/enums/carburants.dart';
+import 'package:fueltter/models/carburant.dart';
 
 const Map<Carburant, String> _mapLibellesCarburants = {
   Carburant.SP95: 'SP95',

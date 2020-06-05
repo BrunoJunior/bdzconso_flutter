@@ -1,75 +1,72 @@
 import 'package:flutter/material.dart';
-import 'package:fueltter/blocs/add_plein_form_bloc.dart';
-import 'package:fueltter/blocs/bloc_provider.dart';
 import 'package:fueltter/database/converters/numeric_converter.dart';
+import 'package:fueltter/forms/form_validators.dart';
+import 'package:fueltter/forms/plein_form.dart';
 import 'package:fueltter/ui/composants/form_card.dart';
 import 'package:fueltter/ui/composants/valeur_unite.dart';
-import 'package:rxdart/streams.dart';
+import 'package:provider/provider.dart';
 
 class ValeursCalculees extends StatelessWidget {
   const ValeursCalculees();
 
   @override
   Widget build(BuildContext context) {
-    final formBloc = BlocProvider.of<AddPleinFormBloc>(context);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        StreamBuilder<bool>(
-            stream: formBloc.partiel,
-            builder: (context, snapshot) {
-              if (snapshot.data ?? false) {
-                return const SizedBox.shrink();
-              }
-              return Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 10.0),
-                  child: FormCard(
-                    title: 'Consommation',
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          StreamBuilder<double>(
-                              stream: formBloc.consoCalculee,
-                              builder: (context, snapshot) {
-                                return ValeurUnite(
-                                  unite: 'l/100km',
-                                  valeur: snapshot.data,
-                                );
-                              }),
-                          StreamBuilder<double>(
-                              stream: CombineLatestStream.combine2(
-                                formBloc.consoCalculee,
-                                formBloc.consoAffichee,
-                                (double calc, double aff) => calc - aff,
-                              ),
-                              builder: (context, snapshot) {
-                                final diff = snapshot.data ?? 0.0;
-                                return Visibility(
-                                  visible: diff != 0,
-                                  child: Text(
-                                    ' (${diff > 0 ? '+' : ''}${NumericConverter.cents.getStringFromNumber(diff)})',
-                                    style: const TextStyle(
-                                        fontStyle: FontStyle.italic),
-                                  ),
-                                );
-                              }),
-                        ],
-                      )
-                    ],
-                  ),
+        Selector<PleinForm, bool>(
+          selector: (_, form) => form.partiel.value ?? false,
+          builder: (_, partiel, __) {
+            if (partiel) {
+              return const SizedBox.shrink();
+            }
+            return Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 10.0),
+                child: FormCard(
+                  title: 'Consommation',
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Selector<PleinForm, double>(
+                          selector: (_, form) => form.consoCalculee,
+                          builder: (_, consoCalculee, __) => ValeurUnite(
+                            unite: 'l/100km',
+                            valeur: consoCalculee,
+                          ),
+                        ),
+                        Selector<PleinForm, double>(
+                          selector: (_, form) =>
+                              (form.consoCalculee ?? 0.0) -
+                              (DoubleValidator.parse(
+                                      form.consoAffichee.value) ??
+                                  0.0),
+                          builder: (_, diff, __) => Visibility(
+                            visible: diff != 0,
+                            child: Text(
+                              ' (${diff > 0 ? '+' : ''}${NumericConverter.cents.getStringFromNumber(diff)})',
+                              style:
+                                  const TextStyle(fontStyle: FontStyle.italic),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
                 ),
-              );
-            }),
+              ),
+            );
+          },
+        ),
         Expanded(
           child: FormCard(title: 'Prix au litre', children: [
-            StreamBuilder<double>(
-              stream: formBloc.prixLitre,
-              builder: (context, snapshot) => ValeurUnite(
+            Selector<PleinForm, double>(
+              selector: (_, form) => form.prixLitre,
+              builder: (_, prix, __) => ValeurUnite(
                 unite: '€/L',
-                valeur: snapshot.data,
+                valeur: prix,
                 nbDecimales: 3,
               ),
             ),
