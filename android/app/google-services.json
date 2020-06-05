@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "86705197235",
+    "firebase_url": "https://fueltter.firebaseio.com",
+    "project_id": "fueltter",
+    "storage_bucket": "fueltter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:86705197235:android:7360e0fd9a34af477ca0c6",
+        "android_client_info": {
+          "package_name": "com.bdesprez.fueltter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "86705197235-kfpi0nmh8nspeut4stnmgf8snolgjjtp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACMzgE8v6NN7hRY7RFiQv8KjrWjdOe2hw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "86705197235-kfpi0nmh8nspeut4stnmgf8snolgjjtp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
