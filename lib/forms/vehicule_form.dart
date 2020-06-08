@@ -6,7 +6,6 @@ import 'package:fueltter/forms/form.dart';
 import 'package:fueltter/forms/form_element.dart';
 import 'package:fueltter/forms/form_validators.dart';
 import 'package:fueltter/models/carburant.dart';
-import 'package:fueltter/services/vehicule_photo_service.dart';
 
 /// Clés des champs du formulaire
 enum VehiculeField {
@@ -102,6 +101,13 @@ class VehiculeForm extends Form<VehiculeField> {
     carburantFavoris.change(favoris);
   }
 
+  Future<bool> onBack() async {
+    if (null == _initial?.id && null != photoPath.value) {
+      await File(photoPath.value).delete();
+    }
+    return true;
+  }
+
   @override
   Future<void> onSubmit() async {
     // La photo a été modifiée
@@ -110,11 +116,6 @@ class VehiculeForm extends Form<VehiculeField> {
       final filePhoto = File(_initial?.photo ?? '__');
       if (filePhoto.existsSync()) {
         filePhoto.deleteSync();
-      }
-      if (null != photoPath.value) {
-        // On déplace la photo temporaire et on renseigne le chemin final
-        photoPath.change(await VehiculePhotoService.instance
-            .movePhotoInFinalPath(photoPath.value));
       }
     }
     // Sauvegarde en BDD

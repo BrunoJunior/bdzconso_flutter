@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:file_utils/file_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fueltter/database/database.dart';
-import 'package:fueltter/ui/router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -36,18 +35,16 @@ class VehiculePhotoService {
 
   Future<String> takePicture(BuildContext context,
       {bool autoSave = true}) async {
-    final tempPath = await Navigator.pushNamed(context, TakePictureRoute);
-    return autoSave ? await movePhotoInFinalPath(tempPath) : tempPath;
+    final picture = await ImagePicker().getImage(source: ImageSource.camera);
+    return autoSave ? await movePhotoInFinalPath(picture?.path) : picture?.path;
   }
 
   Future<String> movePhotoInFinalPath(String tempPath) async {
     final String finalPath = await getImagePath();
-    if (null != tempPath && FileUtils.rename(tempPath, finalPath)) {
-      return finalPath;
-    } else if (null == tempPath) {
+    if (null == tempPath) {
       return null;
-    } else {
-      throw new Exception('Erreur lors de la sauvegarde de la photo');
     }
+    final file = await File(tempPath).copy(finalPath);
+    return file.path;
   }
 }

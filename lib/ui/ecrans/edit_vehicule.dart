@@ -20,19 +20,32 @@ class EditVehicule extends StatelessWidget {
         selector: (_, data) => data.selectedVehicule,
         builder: (context, vehicule, _) => ChangeNotifierProvider(
           create: (_) => VehiculeForm(vehicule: vehicule),
-          child: Scaffold(
-            appBar: AppBar(
-              title: Text((null == vehicule?.id)
-                  ? "Création véhicule"
-                  : "Édition véhicule"),
-              actions: [const _FormAction()],
-            ),
-            body: Orientation.landscape == MediaQuery.of(context).orientation
-                ? const _Landscape()
-                : const _Portrait(),
-          ),
+          child: _FormPage((null == vehicule?.id)
+              ? "Création véhicule"
+              : "Édition véhicule"),
         ),
       );
+}
+
+class _FormPage extends StatelessWidget {
+  final String title;
+  _FormPage(this.title);
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () =>
+          Provider.of<VehiculeForm>(context, listen: false).onBack(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+          actions: [const _FormAction()],
+        ),
+        body: Orientation.landscape == MediaQuery.of(context).orientation
+            ? const _Landscape()
+            : const _Portrait(),
+      ),
+    );
+  }
 }
 
 class _FormAction extends StatelessWidget {
@@ -106,8 +119,7 @@ class _ZonePhoto extends StatelessWidget {
       ),
       onPressed: () async => Provider.of<VehiculeForm>(context, listen: false)
           .photoPath
-          .change(await VehiculePhotoService.instance
-              .takePicture(context, autoSave: false)),
+          .change(await VehiculePhotoService.instance.takePicture(context)),
     );
   }
 }

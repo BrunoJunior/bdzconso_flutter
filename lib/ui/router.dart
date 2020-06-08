@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fueltter/services/camera_service.dart';
+import 'package:fueltter/ui/tests/gas_pump_ml.dart';
 
 import 'ecrans/edit_vehicule.dart';
 import 'ecrans/form_plein.dart';
@@ -16,6 +17,7 @@ const String StatsVehiculeRoute = 'stats-vehicule';
 const String NouveauPleinRoute = 'nouveau-plein';
 const String ListePleinsRoute = 'liste-pleins';
 const String GraphsVehiculeRoute = 'graphs-vehicule';
+const String GasPumpMLRoute = 'gas-pump-ml';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -35,6 +37,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => EcranListePleins());
     case GraphsVehiculeRoute:
       return MaterialPageRoute(builder: (context) => GraphsVehicule());
+    case GasPumpMLRoute:
+      return MaterialPageRoute(builder: (context) => GasPumpMLPage());
     default:
       return MaterialPageRoute(builder: (context) => const Home());
   }

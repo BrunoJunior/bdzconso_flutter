@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import 'models/vehicules_list_data.dart';
 import 'services/camera_service.dart';
 import 'ui/router.dart';
 
-// FIXME - Ecran prise de photo écrasé en paysage - Use image_picker
 // TODO - Import / Export : Google Drive / Local / Dropbox / BdzConso Web
 // TODO - BloCs => Provider
 // TODO - Étape ultime : utiliser la caméra pour remplir automatiquement les valeurs d'un plein (ML de Google Firebase ?)
@@ -16,6 +16,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Intl.defaultLocale = 'fr_FR';
   await CameraService.initialize();
+  await Permission.camera.request();
   runApp(
     ChangeNotifierProvider<VehiculeListData>(
       create: (_) => VehiculeListData(),
